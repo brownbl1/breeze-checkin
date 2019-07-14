@@ -1,19 +1,20 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react'
+import Sentry from 'sentry-expo'
+import { Provider } from 'react-redux'
+
+import { AppNavigator } from './src/navigation/AppNavigator'
+import { SENTRY_DSN } from './src/env'
+import { SentryBoundary } from './src/SentryBoundary'
+import { store } from './src/store'
+
+Sentry.config(SENTRY_DSN).install()
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-    </View>
-  );
+    <Provider store={store}>
+      <SentryBoundary>
+        <AppNavigator />
+      </SentryBoundary>
+    </Provider>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
