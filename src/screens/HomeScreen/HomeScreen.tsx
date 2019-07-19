@@ -90,7 +90,7 @@ const ConnectedContents = connect(
 )(ScreenContents)
 
 export const HomeScreen: React.FC<NavigationScreenProps> = ({ navigation }) => {
-  const goToFamily = () => navigation.push('Family')
+  const goToFamily = () => navigation.push('FamilyScreen')
 
   const updateHeader = ({ event, attendance, teacherAttendance }) => {
     if (event) {
