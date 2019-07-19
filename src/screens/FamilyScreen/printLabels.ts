@@ -38,13 +38,12 @@ export const printLabels = async ({
     .map(({ details }) => `${details.first_name} ${details.last_name}`)
 
   const printAsync = html =>
-    // Print.printAsync({
-    //   // printerUrl: printer.url,
-    //   printerUrl: printer.url.replace('ipps', 'ipp'),
-    //   orientation: Print.Orientation.landscape,
-    //   markupFormatterIOS: html,
-    // })
-    Promise.resolve()
+    Print.printAsync({
+      // printerUrl: printer.url,
+      printerUrl: printer.url.replace('ipps', 'ipp'),
+      orientation: Print.Orientation.landscape,
+      markupFormatterIOS: html,
+    })
 
   if (selectedChildrenNames.length) {
     await printAsync(getParentLabelHtml({ selectedChildrenNames, parentNames }))

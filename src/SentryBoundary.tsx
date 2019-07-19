@@ -1,11 +1,12 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import Sentry from 'sentry-expo'
+import { store } from './store'
 
 export class SentryBoundary extends React.Component {
   state = { hasError: false }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     return {
       hasError: true,
     }
@@ -19,7 +20,7 @@ export class SentryBoundary extends React.Component {
 
     Sentry.captureException(error, {
       extra: {
-        // state: this.props.store.getState(),
+        state: store.getState(),
         errorInfo,
       },
     })
@@ -34,10 +35,7 @@ export class SentryBoundary extends React.Component {
           justifyContent: 'center',
         }}
       >
-        <Text>
-          Something went wrong. Please pray for help with this error and you
-          might be assisted.
-        </Text>
+        <Text>Something went wrong.</Text>
       </View>
     ) : (
       this.props.children
