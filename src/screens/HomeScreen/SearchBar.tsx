@@ -1,0 +1,26 @@
+import React, { useCallback, useRef } from 'react'
+import { SearchBar } from 'react-native-elements'
+
+type Props = {
+  value: string
+  onChangeText: (text: string) => void
+}
+
+export const Search: React.FC<Props> = props => {
+  const searchRef = useRef(null)
+
+  const clearOnPress = () => {
+    searchRef.current.searchbar.clear()
+    searchRef.current.searchbar.focus()
+  }
+
+  return (
+    <SearchBar
+      ref={searchRef}
+      lightTheme
+      placeholder="Search for first or last name..."
+      clearIcon={{ name: 'close', onPress: clearOnPress }}
+      {...props}
+    />
+  )
+}

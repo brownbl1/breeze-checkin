@@ -15,8 +15,8 @@ import {
   SettingsScreen,
 } from '../screens'
 
-const getNavOptions = title => ({ navigation }) => ({
-  title,
+const getNavOptions = titleOrFn => ({ navigation }) => ({
+  title: typeof titleOrFn === 'string' ? titleOrFn : titleOrFn(navigation),
   headerLeft: <MenuButton onPress={() => navigation.toggleDrawer()} />,
 })
 
@@ -24,7 +24,9 @@ const RootStack = createDrawerNavigator({
   Home: createStackNavigator({
     HomeScreen: {
       screen: HomeScreen,
-      navigationOptions: getNavOptions('Home'),
+      navigationOptions: getNavOptions(({ state }) =>
+        state.params ? state.params.title : ''
+      ),
     },
     FamilyScreen: {
       screen: FamilyScreen,
