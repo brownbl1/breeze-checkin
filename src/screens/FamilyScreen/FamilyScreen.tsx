@@ -205,7 +205,7 @@ const ConnectedContents = connect(
 export const FamilyScreen: React.FC<NavigationScreenProps> = ({
   navigation,
 }) => {
-  const goHome = () => navigation.navigate('Home')
+  const goHome = () => navigation.goBack()
   const setTitle = (name: string) => navigation.setParams({ title: name })
   return <ConnectedContents goHome={goHome} setTitle={setTitle} />
 }

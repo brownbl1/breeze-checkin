@@ -1,4 +1,4 @@
-import { Print } from 'expo'
+import * as Print from 'expo-print'
 import Toast from 'react-native-root-toast'
 import {
   getChildLabelHtml,
@@ -38,11 +38,13 @@ export const printLabels = async ({
     .map(({ details }) => `${details.first_name} ${details.last_name}`)
 
   const printAsync = html =>
-    Print.printAsync({
-      printerUrl: printer.url.replace('ipps', 'ipp'),
-      orientation: Print.Orientation.landscape,
-      markupFormatterIOS: html,
-    })
+    // Print.printAsync({
+    //   // printerUrl: printer.url,
+    //   printerUrl: printer.url.replace('ipps', 'ipp'),
+    //   orientation: Print.Orientation.landscape,
+    //   markupFormatterIOS: html,
+    // })
+    Promise.resolve()
 
   if (selectedChildrenNames.length) {
     await printAsync(getParentLabelHtml({ selectedChildrenNames, parentNames }))
