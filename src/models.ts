@@ -1,9 +1,9 @@
-import { API_KEY, EVENT_ID, TEACHER_EVENT_ID } from './env'
+import { API_KEY, EVENT_ID, TEACHER_EVENT_ID, SUB } from './env'
 import moment from 'moment'
 import { setEvent } from './helpers/getEvent'
 import { createModel } from '@rematch/core'
 
-const baseUrl = 'https://crosswaypa.breezechms.com'
+const baseUrl = `https://${SUB}.breezechms.com`
 const options = {
   headers: { 'Api-key': API_KEY },
 }
