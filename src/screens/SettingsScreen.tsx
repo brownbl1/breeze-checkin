@@ -15,7 +15,7 @@ const mapDispatch = dispatch => ({
   },
 })
 
-type Props = {} & ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>
+type Props = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>
 
 const ScreenContents: React.FC<Props> = ({ onPress, printer }) => {
   const printerName = printer && printer.name
