@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Breeze Checkin 34",
-    "slug": "breeze-checkin-34",
-    "sdkVersion": "34.0.0",
+    "name": "Breeze Checkin 36",
+    "slug": "breeze-checkin-36",
+    "sdkVersion": "36.0.0",
     "platforms": ["ios"],
     "version": "1.0.0",
     "orientation": "landscape",
