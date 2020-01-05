@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { View } from 'react-native'
 import { connect } from 'react-redux'
-import { AlertIOS } from 'react-native'
+import { Alert } from 'react-native'
 import { Button } from 'react-native-elements'
 import { PIN_KEY } from '../../env'
 import Toast from 'react-native-root-toast'
@@ -74,14 +74,14 @@ const _onPressPrint = ({
   }
 
   requirePin({ printDetails, isChild, selectedChildRelationships })
-    ? AlertIOS.prompt(
+    ? Alert.prompt(
         'Enter PIN',
         `Enter the Entrust PIN for\n${name}:`,
         text =>
           head.details[PIN_KEY] === text
             ? _print()
             : Toast.show('The PIN you entered was incorrect.'),
-        'secure-text'
+        'secure-text',
       )
     : _print()
 }
@@ -197,10 +197,7 @@ const ScreenContents: React.FC<Props> = ({
   )
 }
 
-const ConnectedContents = connect(
-  mapState,
-  mapDispatch
-)(ScreenContents)
+const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
 export const FamilyScreen: React.FC<NavigationScreenProps> = ({
   navigation,

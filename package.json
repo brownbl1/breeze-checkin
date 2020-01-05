@@ -17,6 +17,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.1.tar.gz",
     "react-native-elements": "^1.1.0",
     "react-native-root-toast": "^3.1.2",
+    "react-native-gesture-handler": "^1.5.3",
     "react-navigation": "^3.11.1",
     "react-redux": "^7.1.0",
     "sentry-expo": "^1.13.0"

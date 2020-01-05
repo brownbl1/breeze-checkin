@@ -3,8 +3,11 @@
     "name": "Breeze Checkin 36",
     "slug": "breeze-checkin-36",
     "sdkVersion": "36.0.0",
-    "platforms": ["ios"],
+    "platforms": [
+      "ios"
+    ],
     "version": "1.0.0",
+    "description": "",
     "orientation": "landscape",
     "icon": "./src/assets/icon.png",
     "splash": {
@@ -15,7 +18,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },

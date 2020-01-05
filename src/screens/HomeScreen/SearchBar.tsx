@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useRef } from 'react'
 import { SearchBar } from 'react-native-elements'
 
 type Props = {
