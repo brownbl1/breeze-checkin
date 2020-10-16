@@ -1,6 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
 import { Icon } from 'react-native-elements'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 interface MenuButtonProps {
   onPress: () => void
@@ -8,18 +9,18 @@ interface MenuButtonProps {
 
 export const MenuButton: React.FC<MenuButtonProps> = ({ onPress }) => {
   return (
-    <View
-      style={{
-        paddingLeft: 15,
-      }}
-    >
-      <Icon
-        name="menu"
-        onPress={onPress}
-        iconStyle={{
-          paddingRight: 10,
-        }}
-      />
+    <View>
+      <TouchableOpacity onPress={onPress}>
+        <Icon
+          name="menu"
+          iconStyle={{
+            paddingTop: 10,
+            paddingBottom: 10,
+            paddingLeft: 15,
+            paddingRight: 15,
+          }}
+        />
+      </TouchableOpacity>
     </View>
   )
 }

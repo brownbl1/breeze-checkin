@@ -1,8 +1,9 @@
 import React from 'react'
 import Sentry from 'sentry-expo'
 import { Provider } from 'react-redux'
+import { NavigationContainer } from '@react-navigation/native'
 
-import { AppNavigator } from './src/navigation/AppNavigator'
+import { SwitchRoot } from './src/navigation/AppNavigator'
 import { SENTRY_DSN } from './src/env'
 import { SentryBoundary } from './src/SentryBoundary'
 import { store } from './src/store'
@@ -13,7 +14,9 @@ export default function App() {
   return (
     <Provider store={store}>
       <SentryBoundary>
-        <AppNavigator />
+        <NavigationContainer>
+          <SwitchRoot />
+        </NavigationContainer>
       </SentryBoundary>
     </Provider>
   )

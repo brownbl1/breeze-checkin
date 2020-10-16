@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { NavigationScreenProps } from 'react-navigation'
+import { useNavigation } from '@react-navigation/native'
 import { View, Image } from 'react-native'
 import { connect } from 'react-redux'
 import { Search } from './SearchBar'
@@ -48,7 +48,7 @@ const ScreenContents: React.FC<Props> = ({
     updateHeader({ event, attendance, teacherAttendance })
   }, [event, attendance, teacherAttendance])
 
-  const onPress = async item => {
+  const onPress = async (item) => {
     await onSelectPerson(item)
     goToFamily()
   }
@@ -86,17 +86,14 @@ const ScreenContents: React.FC<Props> = ({
 
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
-export const HomeScreen: React.FC<NavigationScreenProps> = ({ navigation }) => {
-  const goToFamily = () => navigation.push('FamilyScreen')
+export const HomeScreen: React.FC = () => {
+  const navigation = useNavigation()
+  const goToFamily = () => navigation.navigate('Family')
 
   const updateHeader = ({ event, attendance, teacherAttendance }) => {
     if (event) {
       const title = `${event.name} - ${event.date} (${attendance.length}, ${teacherAttendance.length})`
-
-      const { params } = navigation.state
-      if (!params || title != params.title) {
-        navigation.setParams({ title })
-      }
+      navigation.setOptions({ title })
     }
   }
 

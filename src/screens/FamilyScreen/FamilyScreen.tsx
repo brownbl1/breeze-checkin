@@ -6,7 +6,7 @@ import { Button } from 'react-native-elements'
 import { PIN_KEY } from '../../env'
 import Toast from 'react-native-root-toast'
 import FamilyList from './FamilyList'
-import { NavigationScreenProps } from 'react-navigation'
+import { useNavigation } from '@react-navigation/native'
 import { printLabels } from './printLabels'
 
 const mapState = ({
@@ -25,7 +25,7 @@ const mapState = ({
   teachers,
 })
 
-const mapDispatch = dispatch => ({
+const mapDispatch = (dispatch) => ({
   toggleChecked: dispatch.selectedChildRelationships.toggleChecked,
   checkIn: dispatch.attendance.checkInAsync,
   checkInTeacher: dispatch.attendance.checkInTeacherAsync,
@@ -77,7 +77,7 @@ const _onPressPrint = ({
     ? Alert.prompt(
         'Enter PIN',
         `Enter the Entrust PIN for\n${name}:`,
-        text =>
+        (text) =>
           head.details[PIN_KEY] === text
             ? _print()
             : Toast.show('The PIN you entered was incorrect.'),
@@ -133,7 +133,7 @@ const ScreenContents: React.FC<Props> = ({
     setTitle(name)
   }, [name])
 
-  const isTeacher = person_id => teachers.find(({ id }) => id === person_id)
+  const isTeacher = (person_id) => teachers.find(({ id }) => id === person_id)
   const isChild = ({ role_id, person_id }) =>
     role_id === '2' && !isTeacher(person_id)
 
@@ -168,7 +168,7 @@ const ScreenContents: React.FC<Props> = ({
     printer,
   })
 
-  const onPressRow = item => toggleChecked(item.id)
+  const onPressRow = (item) => toggleChecked(item.id)
 
   return (
     <View
@@ -199,10 +199,9 @@ const ScreenContents: React.FC<Props> = ({
 
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
-export const FamilyScreen: React.FC<NavigationScreenProps> = ({
-  navigation,
-}) => {
+export const FamilyScreen: React.FC = () => {
+  const navigation = useNavigation()
   const goHome = () => navigation.goBack()
-  const setTitle = (name: string) => navigation.setParams({ title: name })
+  const setTitle = (name: string) => navigation.setOptions({ title: name })
   return <ConnectedContents goHome={goHome} setTitle={setTitle} />
 }

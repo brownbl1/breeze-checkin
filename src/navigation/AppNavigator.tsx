@@ -1,59 +1,98 @@
 import React from 'react'
-import {
-  createAppContainer,
-  createSwitchNavigator,
-  createDrawerNavigator,
-  createStackNavigator,
-} from 'react-navigation'
+import { AppLoading } from 'expo'
+import { createStackNavigator } from '@react-navigation/stack'
+import { createDrawerNavigator } from '@react-navigation/drawer'
+import { useNavigation } from '@react-navigation/native'
 
 import { MenuButton } from './MenuButton'
 import {
-  LoadingScreen,
+  useStartingScreen,
   HomeScreen,
   FamilyScreen,
   SelectDateScreen,
   SettingsScreen,
+  StartingScreen,
 } from '../screens'
 
-const getTitle = titleOrFn => ({ navigation }) => ({
-  title: typeof titleOrFn === 'string' ? titleOrFn : titleOrFn(navigation),
+const leftNavOpts = (navigation) => ({
+  headerLeft: () => (
+    <MenuButton
+      onPress={() => {
+        navigation.toggleDrawer()
+      }}
+    />
+  ),
 })
 
-const getNavOptions = titleOrFn => ({ navigation }) => ({
-  ...getTitle(titleOrFn)({ navigation }),
-  headerLeft: <MenuButton onPress={() => navigation.toggleDrawer()} />,
-})
+const Stack = createStackNavigator()
+const RootHomeStack = () => {
+  const navigation = useNavigation()
 
-const titleOrEmpty = ({ state }) => (state.params ? state.params.title : '')
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={leftNavOpts(navigation)}
+      />
+      <Stack.Screen name="Family" component={FamilyScreen} />
+    </Stack.Navigator>
+  )
+}
 
-const RootStack = createDrawerNavigator({
-  Home: createStackNavigator({
-    HomeScreen: {
-      screen: HomeScreen,
-      navigationOptions: getNavOptions(titleOrEmpty),
-    },
-    FamilyScreen: {
-      screen: FamilyScreen,
-      navigationOptions: getTitle(titleOrEmpty),
-    },
-  }),
-  'Select Date': createStackNavigator({
-    SelectDateScreen: {
-      screen: SelectDateScreen,
-      navigationOptions: getNavOptions('Select Date'),
-    },
-  }),
-  Settings: createStackNavigator({
-    SettingsScreen: {
-      screen: SettingsScreen,
-      navigationOptions: getNavOptions('Settings'),
-    },
-  }),
-})
+const RootDateStack = () => {
+  const navigation = useNavigation()
 
-export const AppNavigator = createAppContainer(
-  createSwitchNavigator({
-    Loading: LoadingScreen,
-    RootStack,
-  })
-)
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Select Date"
+        component={SelectDateScreen}
+        options={leftNavOpts(navigation)}
+      />
+    </Stack.Navigator>
+  )
+}
+
+const RootSettingsStack = () => {
+  const navigation = useNavigation()
+
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={leftNavOpts(navigation)}
+      />
+    </Stack.Navigator>
+  )
+}
+
+const Drawer = createDrawerNavigator()
+
+type RootDrawerProps = {
+  initialRouteName: 'Home' | 'Select Date'
+}
+
+const RootDrawer: React.FC<RootDrawerProps> = ({ initialRouteName }) => {
+  return (
+    <Drawer.Navigator initialRouteName={initialRouteName}>
+      <Drawer.Screen name="Home" component={RootHomeStack} />
+      <Drawer.Screen name="Select Date" component={RootDateStack} />
+      <Drawer.Screen name="Settings" component={RootSettingsStack} />
+    </Drawer.Navigator>
+  )
+}
+
+export const SwitchRoot = () => {
+  const screen = useStartingScreen()
+
+  switch (screen) {
+    case StartingScreen.Loading:
+      return <AppLoading />
+    case StartingScreen.Home:
+      return <RootDrawer initialRouteName="Home" />
+    case StartingScreen.SelectDate:
+      return <RootDrawer initialRouteName="Select Date" />
+  }
+}

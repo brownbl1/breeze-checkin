@@ -1,4 +1,4 @@
-export * from './LoadingScreen'
+export * from './useStartingScreen'
 export * from './HomeScreen'
 export * from './FamilyScreen'
 export * from './SelectDateScreen'

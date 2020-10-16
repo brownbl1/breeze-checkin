@@ -1,14 +1,20 @@
-import React, { useEffect } from 'react'
-import { NavigationScreenProps } from 'react-navigation'
-import { AppLoading } from 'expo'
+import { useEffect, useState } from 'react'
 
 import { getPrinter } from '../helpers/getPrinter'
 import { getEvent } from '../helpers/getEvent'
 import { store } from '../store'
 
-export const LoadingScreen: React.FC<NavigationScreenProps> = ({
-  navigation,
-}) => {
+export enum StartingScreen {
+  Loading,
+  Home,
+  SelectDate,
+}
+
+export const useStartingScreen = () => {
+  const [startingScreen, setStartingScreen] = useState<StartingScreen>(
+    StartingScreen.Loading,
+  )
+
   useEffect(() => {
     Promise.all([getPrinter(), getEvent()]).then(
       async ([printer, eventData]) => {
@@ -21,14 +27,14 @@ export const LoadingScreen: React.FC<NavigationScreenProps> = ({
           store.dispatch.event.selectTeacher(eventData.teacherId)
           store.dispatch.teachers.setAsync(eventData.teacherId)
           await store.dispatch.eventPeople.selectAsync(eventData.event.id)
-          navigation.navigate('Home')
+          setStartingScreen(StartingScreen.Home)
           return
         }
 
-        navigation.navigate('Select Date')
-      }
+        setStartingScreen(StartingScreen.SelectDate)
+      },
     )
   }, [])
 
-  return <AppLoading />
+  return startingScreen
 }

@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
-import { NavigationScreenProps } from 'react-navigation'
-import { View, DatePickerIOS } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { View } from 'react-native'
+import DatePicker from '@react-native-community/datetimepicker'
 import moment from 'moment'
 import { Button } from 'react-native-elements'
 import { connect } from 'react-redux'
@@ -33,7 +34,11 @@ const ScreenContents: React.FC<Props> = ({ fetchEvents, goHome }) => {
       }}
     >
       <View style={{ width: '50%' }}>
-        <DatePickerIOS mode="date" date={date} onDateChange={setDate} />
+        <DatePicker
+          mode="date"
+          value={date}
+          onChange={(e, date) => setDate(date)}
+        />
       </View>
       <View style={{ margin: 20 }}>
         <Button
@@ -46,14 +51,10 @@ const ScreenContents: React.FC<Props> = ({ fetchEvents, goHome }) => {
   )
 }
 
-const ConnectedContents = connect(
-  null,
-  mapDispatch
-)(ScreenContents)
+const ConnectedContents = connect(null, mapDispatch)(ScreenContents)
 
-export const SelectDateScreen: React.FC<NavigationScreenProps> = ({
-  navigation,
-}) => {
+export const SelectDateScreen: React.FC = () => {
+  const navigation = useNavigation()
   const goHome = () => navigation.navigate('Home')
   return <ConnectedContents goHome={goHome} />
 }
