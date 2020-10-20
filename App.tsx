@@ -1,5 +1,5 @@
 import React from 'react'
-import Sentry from 'sentry-expo'
+import * as Sentry from 'sentry-expo'
 import { Provider } from 'react-redux'
 import Constants from 'expo-constants'
 
