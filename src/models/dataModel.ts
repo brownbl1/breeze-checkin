@@ -46,6 +46,7 @@ export type Person = {
     birthdate: string
     '2022452148': string // allergies
     '2022452154': string // pin
+    '2022452149': string // entrust key
   }
   family: FamilyPerson[]
 } & CommonPersonDetails

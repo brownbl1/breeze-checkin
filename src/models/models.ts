@@ -11,7 +11,7 @@ import { teacherAttendance } from './teacherAttendance'
 import { attendance } from './attendance'
 import { printer } from './printer'
 import { searchText } from './searchText'
-import { EventPerson, AugmentedEventPerson } from './dataModel'
+import { EventPerson } from './dataModel'
 
 const placeholder = require('../assets/gray.png')
 
@@ -46,10 +46,19 @@ export const options = {
   headers: { 'Api-key': API_KEY },
 }
 
-export const mapPerson = (person: EventPerson): AugmentedEventPerson => ({
-  ...person,
-  name: `${person.first_name} ${person.last_name}`.trim(),
-  source: person.path.includes('generic')
-    ? placeholder
-    : { uri: `${baseUrl}/${person.path}` },
-})
+type DetailsPerson = {
+  thumb_path: string
+  checked: boolean
+} & EventPerson
+
+type MapArgs = DetailsPerson | EventPerson
+
+export function mapPerson<T extends MapArgs>(person: T): T {
+  return {
+    ...person,
+    name: `${person.first_name} ${person.last_name}`.trim(),
+    source: person.path.includes('generic')
+      ? placeholder
+      : { uri: `${baseUrl}/${person.path}` },
+  }
+}

@@ -1,4 +1,5 @@
 import { AsyncStorage } from 'react-native'
+import { BreezeEvent } from '../models/dataModel'
 
 export const getEvent = async () => {
   const eventString = await AsyncStorage.getItem('event')
@@ -9,6 +10,11 @@ export const getEvent = async () => {
   return null
 }
 
-export const setEvent = async event => {
+type EventArgs = {
+  event: BreezeEvent
+  teacherId: string
+}
+
+export const setEvent = async (event: EventArgs) => {
   AsyncStorage.setItem('event', JSON.stringify(event))
 }
