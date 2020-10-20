@@ -28,7 +28,7 @@
     "react-native-safe-area-context": "3.1.4",
     "react-native-screens": "~2.10.1",
     "react-redux": "^7.1.0",
-    "sentry-expo": "^1.13.0"
+    "sentry-expo": "^3.0.2"
   },
   "devDependencies": {
     "@types/react": "~16.9.35",
@@ -36,6 +36,10 @@
     "@types/react-redux": "^7.1.1",
     "babel-preset-expo": "^8.3.0",
     "typescript": "~3.9.2"
+  },
+  "resolutions": {
+    "node-fetch": ">=2.6.1 <3.0.0-beta.1|| >= 3.0.0-beta.9",
+    "yargs-parser": ">=13.1.2 <14.0.0 || >=15.0.1 <16.0.0 || >=18.1.2"
   },
   "private": true
 }
