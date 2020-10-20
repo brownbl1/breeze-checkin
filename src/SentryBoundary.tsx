@@ -4,7 +4,7 @@ import Sentry from 'sentry-expo'
 import { store } from './store'
 
 export class SentryBoundary extends React.Component {
-  state = { hasError: false }
+  state = { hasError: false, eventId: null as string }
 
   static getDerivedStateFromError() {
     return {
@@ -13,16 +13,17 @@ export class SentryBoundary extends React.Component {
   }
 
   componentDidCatch = (error: any, errorInfo: any) => {
-    this.setState({
-      error,
-      errorInfo,
-    })
-
-    Sentry.Native.captureException(error, {
+    const eventId = Sentry.Native.captureException(error, {
       extra: {
         state: store.getState(),
         errorInfo,
       },
+    })
+
+    this.setState({
+      error,
+      errorInfo,
+      eventId,
     })
   }
 
@@ -36,6 +37,29 @@ export class SentryBoundary extends React.Component {
         }}
       >
         <Text>Something went wrong.</Text>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Text>Event Id: </Text>
+          <View
+            style={{
+              backgroundColor: 'rgba(27,31,35,.05)',
+              borderColor: 'rgba(27,31,35,.05)',
+              borderRadius: 3,
+              paddingTop: 3.2,
+              paddingBottom: 3.2,
+              paddingLeft: 6.4,
+              paddingRight: 6.4,
+            }}
+          >
+            <Text>{this.state.eventId}</Text>
+          </View>
+        </View>
       </View>
     ) : (
       this.props.children
