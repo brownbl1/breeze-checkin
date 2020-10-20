@@ -18,7 +18,7 @@ export class SentryBoundary extends React.Component {
       errorInfo,
     })
 
-    Sentry.captureException(error, {
+    Sentry.Native.captureException(error, {
       extra: {
         state: store.getState(),
         errorInfo,

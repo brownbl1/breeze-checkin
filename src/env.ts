@@ -1,11 +1,6 @@
-export const API_KEY = '10498aba159dbeb6c40bfd64752682eb'
-
 export const PIN_KEY = '2022452154'
 export const ALLERGIES_KEY = '2022452148'
 export const ENTRUST_KEY = '2022452149'
-
-export const SENTRY_DSN =
-  'https://fd3ee27dd5b74f3f9c58dfd59102616c@sentry.io/1249261'
 
 export const SUB = 'crosswaypa'
 

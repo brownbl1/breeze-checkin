@@ -1,6 +1,7 @@
 import { Models } from '@rematch/core'
+import Constants from 'expo-constants'
 
-import { API_KEY, SUB } from '../env'
+import { SUB } from '../env'
 import { selectedChild } from './selectedChild'
 import { printDetails } from './printDetails'
 import { selectedChildRelationships } from './selectedChildRelationships'
@@ -43,7 +44,7 @@ export const models: RootModel = {
 
 export const baseUrl = `https://${SUB}.breezechms.com`
 export const options = {
-  headers: { 'Api-key': API_KEY },
+  headers: { 'Api-key': Constants.manifest.extra.API_KEY },
 }
 
 type DetailsPerson = {
