@@ -1,7 +1,10 @@
 import React from 'react'
 import { AppLoading } from 'expo'
 import { createStackNavigator } from '@react-navigation/stack'
-import { createDrawerNavigator } from '@react-navigation/drawer'
+import {
+  createDrawerNavigator,
+  DrawerNavigationProp,
+} from '@react-navigation/drawer'
 import { useNavigation, NavigationContainer } from '@react-navigation/native'
 
 import { MenuButton } from './MenuButton'
@@ -9,12 +12,11 @@ import {
   useStartingScreen,
   HomeScreen,
   FamilyScreen,
-  SelectDateScreen,
   SettingsScreen,
   StartingScreen,
 } from '../screens'
 
-const leftNavOpts = (navigation) => ({
+const leftNavOpts = (navigation: RootNavigationProp) => ({
   headerLeft: () => (
     <MenuButton
       onPress={() => {
@@ -24,61 +26,64 @@ const leftNavOpts = (navigation) => ({
   ),
 })
 
-const Stack = createStackNavigator()
+type HomeStackParamList = {
+  Home: undefined
+  Family: undefined
+}
+
+const HomeStack = createStackNavigator<HomeStackParamList>()
 const RootHomeStack = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation<RootNavigationProp>()
 
   return (
-    <Stack.Navigator>
-      <Stack.Screen
+    <HomeStack.Navigator>
+      <HomeStack.Screen
         name="Home"
         component={HomeScreen}
         options={leftNavOpts(navigation)}
       />
-      <Stack.Screen name="Family" component={FamilyScreen} />
-    </Stack.Navigator>
+      <HomeStack.Screen name="Family" component={FamilyScreen} />
+    </HomeStack.Navigator>
   )
 }
 
-const RootDateStack = () => {
-  const navigation = useNavigation()
-
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Select Date"
-        component={SelectDateScreen}
-        options={leftNavOpts(navigation)}
-      />
-    </Stack.Navigator>
-  )
+type SettingsStackParamList = {
+  Settings: undefined
 }
+
+const SettingsStack = createStackNavigator<SettingsStackParamList>()
 
 const RootSettingsStack = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation<RootNavigationProp>()
 
   return (
-    <Stack.Navigator>
-      <Stack.Screen
+    <SettingsStack.Navigator>
+      <SettingsStack.Screen
         name="Settings"
         component={SettingsScreen}
         options={leftNavOpts(navigation)}
       />
-    </Stack.Navigator>
+    </SettingsStack.Navigator>
   )
 }
 
-const Drawer = createDrawerNavigator()
+type DrawerParamList = {
+  Home: undefined
+  Settings: undefined
+}
+
+const Drawer = createDrawerNavigator<DrawerParamList>()
 
 type RootDrawerProps = {
-  initialRouteName: 'Home' | 'Select Date'
+  initialRouteName: 'Home' | 'Settings'
 }
+
+type RootNavigationProp = DrawerNavigationProp<DrawerParamList>
 
 const RootDrawer: React.FC<RootDrawerProps> = ({ initialRouteName }) => {
   return (
     <Drawer.Navigator initialRouteName={initialRouteName}>
       <Drawer.Screen name="Home" component={RootHomeStack} />
-      {/* <Drawer.Screen name="Select Date" component={RootDateStack} /> */}
       <Drawer.Screen name="Settings" component={RootSettingsStack} />
     </Drawer.Navigator>
   )
@@ -93,7 +98,7 @@ const SwitchRoot = () => {
     case StartingScreen.Home:
       return <RootDrawer initialRouteName="Home" />
     case StartingScreen.SelectDate:
-      return <RootDrawer initialRouteName="Select Date" />
+      return <RootDrawer initialRouteName="Settings" /> // TODO: add params to open date picker
   }
 }
 

@@ -12,7 +12,7 @@ export class SentryBoundary extends React.Component {
     }
   }
 
-  componentDidCatch = (error, errorInfo) => {
+  componentDidCatch = (error: any, errorInfo: any) => {
     this.setState({
       error,
       errorInfo,

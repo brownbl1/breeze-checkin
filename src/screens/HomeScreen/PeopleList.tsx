@@ -9,9 +9,18 @@ import {
 } from 'react-native'
 import { Icon } from 'react-native-elements'
 
+import { CommonPersonDetails } from '../../models/dataModel'
+
 const placeholder = require('../../assets/gray.png')
 
-const RowItem = ({ item, onPress }) => (
+type OnPress = (item: CommonPersonDetails) => void
+
+type RowProps = {
+  item: CommonPersonDetails
+  onPress: OnPress
+}
+
+const PeopleRowItem: React.FC<RowProps> = ({ item, onPress }) => (
   <TouchableOpacity onPress={() => onPress(item)}>
     <View
       style={{
@@ -51,11 +60,16 @@ const RowItem = ({ item, onPress }) => (
   </TouchableOpacity>
 )
 
-const PeopleList = ({ people, onPress }) => (
+type Props = {
+  people: CommonPersonDetails[]
+  onPress: OnPress
+}
+
+const PeopleList: React.FC<Props> = ({ people, onPress }) => (
   <View style={{ flex: 1, width: '100%', backgroundColor: '#fff' }}>
     <FlatList
       data={people}
-      renderItem={({ item }) => <RowItem item={item} onPress={onPress} />}
+      renderItem={({ item }) => <PeopleRowItem item={item} onPress={onPress} />}
       keyboardShouldPersistTaps="always"
       onScrollBeginDrag={() => Keyboard.dismiss()}
     />

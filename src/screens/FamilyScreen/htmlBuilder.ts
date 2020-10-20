@@ -1,9 +1,17 @@
 import moment from 'moment'
 
-export const getParentLabelHtml = ({ selectedChildrenNames, parentNames }) => {
+type ParentLabelArgs = {
+  selectedChildrenNames: string[]
+  parentNames: string
+}
+
+export const getParentLabelHtml = ({
+  selectedChildrenNames,
+  parentNames,
+}: ParentLabelArgs) => {
   const dateTime = moment().format('M/D/YYYY h:mm A')
   const childrenHtml = selectedChildrenNames
-    .map(name => `<div>${name}</div>`)
+    .map((name) => `<div>${name}</div>`)
     .join('')
 
   const column = `
@@ -57,7 +65,19 @@ body {
 </div>`
 }
 
-export const getChildLabelHtml = ({ entrustId, name, parentNames, medical }) =>
+type LabelHtmlArgs = {
+  entrustId: string
+  name: string
+  parentNames: string
+  medical: string
+}
+
+export const getChildLabelHtml = ({
+  entrustId,
+  name,
+  parentNames,
+  medical,
+}: LabelHtmlArgs) =>
   `
 <style>
 html,
@@ -114,7 +134,7 @@ body {
   </div>
 </div>`
 
-export const getAdultLabelHtml = name =>
+export const getAdultLabelHtml = (name: string) =>
   `
 <style>
 html,

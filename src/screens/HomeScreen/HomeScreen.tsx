@@ -4,7 +4,10 @@ import { View, Image } from 'react-native'
 import { connect } from 'react-redux'
 import { Search } from './SearchBar'
 import PeopleList from './PeopleList'
-import { Dispatch, iRootState } from '../../store'
+import { Dispatch, RootState } from '../../store'
+import { BreezeEvent, Person } from '../../models/dataModel'
+import { AttendanceState } from '../../models/attendance'
+import { TeacherAttendanceState } from '../../models/teacherAttendance'
 
 const logo = require('../../assets/logo.png')
 
@@ -14,7 +17,7 @@ const mapState = ({
   searchText,
   attendance,
   teacherAttendance,
-}: iRootState) => ({
+}: RootState) => ({
   event,
   eventPeople,
   searchText,
@@ -27,9 +30,16 @@ const mapDispatch = (dispatch: Dispatch) => ({
   onSelectPerson: dispatch.selectedChild.selectAsync,
 })
 
+type UpdateHeader = {
+  event: BreezeEvent
+  date: string
+  attendance: AttendanceState
+  teacherAttendance: TeacherAttendanceState
+}
+
 type Props = {
   goToFamily: () => void
-  updateHeader: (args: any) => void
+  updateHeader: (args: UpdateHeader) => void
 } & ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>
 
@@ -39,16 +49,17 @@ const ScreenContents: React.FC<Props> = ({
   eventPeople: { filtered },
   onSelectPerson,
   event: { event },
+  event: { date },
   attendance,
   teacherAttendance,
   goToFamily,
   updateHeader,
 }) => {
   useEffect(() => {
-    updateHeader({ event, attendance, teacherAttendance })
+    updateHeader({ event, date, attendance, teacherAttendance })
   }, [event, attendance, teacherAttendance])
 
-  const onPress = async (item) => {
+  const onPress = async (item: Person) => {
     await onSelectPerson(item)
     goToFamily()
   }
@@ -90,9 +101,14 @@ export const HomeScreen: React.FC = () => {
   const navigation = useNavigation()
   const goToFamily = () => navigation.navigate('Family')
 
-  const updateHeader = ({ event, attendance, teacherAttendance }) => {
+  const updateHeader = ({
+    event,
+    date,
+    attendance,
+    teacherAttendance,
+  }: UpdateHeader) => {
     if (event) {
-      const title = `${event.name} - ${event.date} (${attendance.length}, ${teacherAttendance.length})`
+      const title = `${event.name} - ${date} (${attendance.length}, ${teacherAttendance.length})`
       navigation.setOptions({ title })
     }
   }

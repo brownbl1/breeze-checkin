@@ -7,7 +7,7 @@ import { Action } from '@rematch/core'
 import Toast from 'react-native-root-toast'
 import { useNavigation } from '@react-navigation/native'
 
-import FamilyList from './FamilyList'
+import { FamilyList } from './FamilyList'
 import { printLabels } from './printLabels'
 import { PIN_KEY } from '../../env'
 import { Dispatch, RootState } from '../../store'
@@ -16,7 +16,7 @@ import { PrintDetailsState } from '../../models/printDetails'
 import { RelationshipsState } from '../../models/selectedChildRelationships'
 import { Printer } from '../../models/printer'
 
-type RowData = {
+export type FamilyRowData = {
   thumb_path: string
   checked: boolean
   id: string
@@ -161,7 +161,7 @@ type IsChild = ({
 }) => boolean
 
 type PrintData = {
-  data: RowData[]
+  data: FamilyRowData[]
   printDetails: PrintDetailsState
   selectedChildRelationships: RelationshipsState
   isChild: IsChild
@@ -241,7 +241,7 @@ const ScreenContents: React.FC<Props> = ({
     printer,
   })
 
-  const onPressRow = (item: RowData) => toggleChecked(item.id)
+  const onPressRow = (item: FamilyRowData) => toggleChecked(item.id)
 
   return (
     <View

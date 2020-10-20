@@ -2,6 +2,7 @@ import React from 'react'
 import { FlatList, TouchableOpacity } from 'react-native'
 import { Icon } from 'react-native-elements'
 import { View, Text, Image } from 'react-native'
+import { FamilyRowData } from './FamilyScreen'
 
 const placeholder = require('../../assets/gray.png')
 
@@ -10,7 +11,19 @@ const bottomBorder = {
   borderBottomWidth: 1,
 }
 
-const RowItem = ({ item, onPress, index, itemCount }) => (
+type RowItemProps = {
+  item: FamilyRowData
+  index: number
+  onPress: (item: FamilyRowData) => void
+  itemCount: number
+}
+
+const FamilyRowItem: React.FC<RowItemProps> = ({
+  item,
+  onPress,
+  index,
+  itemCount,
+}) => (
   <TouchableOpacity onPress={() => onPress(item)}>
     <View
       style={{
@@ -57,7 +70,12 @@ const RowItem = ({ item, onPress, index, itemCount }) => (
   </TouchableOpacity>
 )
 
-export default ({ data, onPress }) => (
+type Props = {
+  data: FamilyRowData[]
+  onPress: (item: FamilyRowData) => void
+}
+
+export const FamilyList: React.FC<Props> = ({ data, onPress }) => (
   <View
     style={{
       width: '50%',
@@ -69,7 +87,7 @@ export default ({ data, onPress }) => (
     <FlatList
       data={data}
       renderItem={({ item, index }) => (
-        <RowItem
+        <FamilyRowItem
           item={item}
           onPress={onPress}
           index={index}

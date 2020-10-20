@@ -14,7 +14,7 @@ type ItemProps = {
   item: Setting
 }
 
-const RowItem = ({ item }: ItemProps) => {
+const SettingsRowItem = ({ item }: ItemProps) => {
   return (
     <TouchableOpacity
       onPress={() => {
@@ -47,7 +47,7 @@ const List = ({ data }: ListProps) => (
   <View style={{ flex: 1, width: '100%', backgroundColor: '#fff' }}>
     <FlatList
       data={data}
-      renderItem={({ item }) => <RowItem item={item} />}
+      renderItem={({ item }) => <SettingsRowItem item={item} />}
       keyExtractor={(item) => item.setting}
       // keyboardShouldPersistTaps="always"
     />

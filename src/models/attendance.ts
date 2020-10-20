@@ -2,7 +2,7 @@ import { createModel } from '@rematch/core'
 import { Attendance } from './dataModel'
 import { RootModel, baseUrl, options } from './models'
 
-type AttendanceState = Attendance[]
+export type AttendanceState = Attendance[]
 
 export const attendance = createModel<RootModel>()({
   state: [] as AttendanceState,
