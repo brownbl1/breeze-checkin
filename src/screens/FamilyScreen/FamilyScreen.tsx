@@ -1,13 +1,33 @@
 import React, { useEffect } from 'react'
-import { View } from 'react-native'
+import { ImageSourcePropType, View } from 'react-native'
 import { connect } from 'react-redux'
 import { Alert } from 'react-native'
 import { Button } from 'react-native-elements'
-import { PIN_KEY } from '../../env'
+import { Action } from '@rematch/core'
 import Toast from 'react-native-root-toast'
-import FamilyList from './FamilyList'
 import { useNavigation } from '@react-navigation/native'
+
+import FamilyList from './FamilyList'
 import { printLabels } from './printLabels'
+import { PIN_KEY } from '../../env'
+import { Dispatch, RootState } from '../../store'
+import { Attendance, CommonPersonDetails } from '../../models/dataModel'
+import { PrintDetailsState } from '../../models/printDetails'
+import { RelationshipsState } from '../../models/selectedChildRelationships'
+import { Printer } from '../../models/printer'
+
+type RowData = {
+  thumb_path: string
+  checked: boolean
+  id: string
+  first_name: string
+  force_first_name: string
+  last_name: string
+  path: string
+  name: string
+  source: ImageSourcePropType
+  attendance: Attendance
+}
 
 const mapState = ({
   selectedChild,
@@ -16,7 +36,7 @@ const mapState = ({
   printDetails,
   printer,
   teachers,
-}) => ({
+}: RootState) => ({
   selectedChild,
   selectedChildRelationships,
   attendance,
@@ -25,7 +45,7 @@ const mapState = ({
   teachers,
 })
 
-const mapDispatch = (dispatch) => ({
+const mapDispatch = (dispatch: Dispatch) => ({
   toggleChecked: dispatch.selectedChildRelationships.toggleChecked,
   checkIn: dispatch.attendance.checkInAsync,
   checkInTeacher: dispatch.attendance.checkInTeacherAsync,
@@ -38,13 +58,33 @@ type Props = {
 } & ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>
 
-const hasPin = ({ printDetails }) =>
+const hasPin = ({ printDetails }: { printDetails: PrintDetailsState }) =>
   hasDetails({ printDetails }) && printDetails.head.details[PIN_KEY]
 
-const requirePin = ({ printDetails, selectedChildRelationships, isChild }) =>
+const requirePin = ({
+  printDetails,
+  selectedChildRelationships,
+  isChild,
+}: {
+  printDetails: PrintDetailsState
+  selectedChildRelationships: RelationshipsState
+  isChild: IsChild
+}) =>
   (hasPin({ printDetails }) &&
     childSelected({ selectedChildRelationships, isChild })) ||
   childSelected({ selectedChildRelationships, isChild })
+
+type PrintProps = {
+  printDetails: PrintDetailsState
+  isChild: IsChild
+  selectedChildRelationships: RelationshipsState
+  setText: (payload: string) => Action<string>
+  goHome: () => void
+  checkIn: (payload: string) => Promise<void>
+  checkInTeacher: (payload: string) => Promise<void>
+  isTeacher: (person_id: string) => CommonPersonDetails
+  printer: Printer
+}
 
 const _onPressPrint = ({
   printDetails,
@@ -56,7 +96,7 @@ const _onPressPrint = ({
   checkInTeacher,
   isTeacher,
   printer,
-}) => () => {
+}: PrintProps) => () => {
   const { head } = printDetails
   const name = `${head.first_name} ${head.last_name}`
 
@@ -86,12 +126,24 @@ const _onPressPrint = ({
     : _print()
 }
 
-const hasDetails = ({ printDetails }) => printDetails && printDetails.head
+const hasDetails = ({ printDetails }: { printDetails: PrintDetailsState }) =>
+  printDetails && printDetails.head
 
-const listContainsChildren = ({ selectedChildRelationships, isChild }) =>
-  selectedChildRelationships && selectedChildRelationships.some(isChild)
+const listContainsChildren = ({
+  selectedChildRelationships,
+  isChild,
+}: {
+  selectedChildRelationships: RelationshipsState
+  isChild: IsChild
+}) => selectedChildRelationships && selectedChildRelationships.some(isChild)
 
-const childSelected = ({ selectedChildRelationships, isChild }) => {
+const childSelected = ({
+  selectedChildRelationships,
+  isChild,
+}: {
+  selectedChildRelationships: RelationshipsState
+  isChild: IsChild
+}) => {
   return (
     selectedChildRelationships &&
     selectedChildRelationships
@@ -100,12 +152,27 @@ const childSelected = ({ selectedChildRelationships, isChild }) => {
   )
 }
 
+type IsChild = ({
+  role_id,
+  person_id,
+}: {
+  role_id: string
+  person_id: string
+}) => boolean
+
+type PrintData = {
+  data: RowData[]
+  printDetails: PrintDetailsState
+  selectedChildRelationships: RelationshipsState
+  isChild: IsChild
+}
+
 const enablePrint = ({
   data,
   printDetails,
   selectedChildRelationships,
   isChild,
-}) => {
+}: PrintData) => {
   const personSelected = data && data.filter(({ checked }) => checked).length
 
   const disableDueToChildSelectedAndMissingPin =
@@ -133,9 +200,15 @@ const ScreenContents: React.FC<Props> = ({
     setTitle(name)
   }, [name])
 
-  const isTeacher = (person_id) => teachers.find(({ id }) => id === person_id)
-  const isChild = ({ role_id, person_id }) =>
-    role_id === '2' && !isTeacher(person_id)
+  const isTeacher = (person_id: string) =>
+    teachers.find(({ id }) => id === person_id)
+  const isChild = ({
+    role_id,
+    person_id,
+  }: {
+    role_id: string
+    person_id: string
+  }) => role_id === '2' && !isTeacher(person_id)
 
   const data =
     selectedChildRelationships &&
@@ -168,7 +241,7 @@ const ScreenContents: React.FC<Props> = ({
     printer,
   })
 
-  const onPressRow = (item) => toggleChecked(item.id)
+  const onPressRow = (item: RowData) => toggleChecked(item.id)
 
   return (
     <View

@@ -2,7 +2,7 @@ import React from 'react'
 import { AppLoading } from 'expo'
 import { createStackNavigator } from '@react-navigation/stack'
 import { createDrawerNavigator } from '@react-navigation/drawer'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, NavigationContainer } from '@react-navigation/native'
 
 import { MenuButton } from './MenuButton'
 import {
@@ -78,13 +78,13 @@ const RootDrawer: React.FC<RootDrawerProps> = ({ initialRouteName }) => {
   return (
     <Drawer.Navigator initialRouteName={initialRouteName}>
       <Drawer.Screen name="Home" component={RootHomeStack} />
-      <Drawer.Screen name="Select Date" component={RootDateStack} />
+      {/* <Drawer.Screen name="Select Date" component={RootDateStack} /> */}
       <Drawer.Screen name="Settings" component={RootSettingsStack} />
     </Drawer.Navigator>
   )
 }
 
-export const SwitchRoot = () => {
+const SwitchRoot = () => {
   const screen = useStartingScreen()
 
   switch (screen) {
@@ -95,4 +95,12 @@ export const SwitchRoot = () => {
     case StartingScreen.SelectDate:
       return <RootDrawer initialRouteName="Select Date" />
   }
+}
+
+export const NavigationRoot = () => {
+  return (
+    <NavigationContainer>
+      <SwitchRoot />
+    </NavigationContainer>
+  )
 }

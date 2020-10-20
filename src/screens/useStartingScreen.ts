@@ -18,9 +18,7 @@ export const useStartingScreen = () => {
   useEffect(() => {
     Promise.all([getPrinter(), getEvent()]).then(
       async ([printer, eventData]) => {
-        if (printer) {
-          store.dispatch.printer.select(printer)
-        }
+        store.dispatch.printer.select(printer ?? '')
 
         if (eventData && eventData.event) {
           store.dispatch.event.select(eventData.event)
