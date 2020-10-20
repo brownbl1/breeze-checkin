@@ -1,10 +1,55 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 import React from 'react'
-import { View, Text, FlatList, TouchableOpacity } from 'react-native'
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native'
 import { connect } from 'react-redux'
 import { setPrinter } from '../../helpers/getPrinter'
 import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
+
+function Spacer() {
+  return (
+    <View
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: 'white',
+          height: 1,
+          width: 13,
+        }}
+      />
+      <View
+        style={{
+          backgroundColor: '#eee',
+          height: 1,
+        }}
+      />
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  topBorder: {
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
+    borderTopWidth: 1,
+    marginTop: 25,
+  },
+  bottomBorder: {
+    borderBottomLeftRadius: 6,
+    borderBottomRightRadius: 6,
+    borderBottomWidth: 1,
+  },
+})
 
 type Setting = {
   setting: string
@@ -14,29 +59,35 @@ type Setting = {
 
 type ItemProps = {
   item: Setting
+  index: number
+  itemCount: number
 }
 
-const SettingsRowItem = ({ item }: ItemProps) => {
+const SettingsRowItem = ({ item, index, itemCount }: ItemProps) => {
   return (
     <TouchableOpacity
       onPress={() => {
         item.onPress()
       }}
     >
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          borderColor: '#aaa',
-          borderBottomWidth: 1,
-          height: 80,
-          padding: 10,
-        }}
-      >
-        <Text>{item.setting}</Text>
-        <Text>{item.value}</Text>
-      </View>
+      <React.Fragment>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            backgroundColor: 'white',
+            padding: 13,
+            borderColor: 'white',
+            ...(index === 0 && styles.topBorder),
+            ...(index === itemCount - 1 && styles.bottomBorder),
+          }}
+        >
+          <Text>{item.setting}</Text>
+          <Text style={{ color: '#888' }}>{item.value}</Text>
+        </View>
+        {index !== itemCount - 1 && <Spacer />}
+      </React.Fragment>
     </TouchableOpacity>
   )
 }
@@ -46,10 +97,18 @@ type ListProps = {
 }
 
 const List = ({ data }: ListProps) => (
-  <View style={{ flex: 1, width: '100%', backgroundColor: '#fff' }}>
+  <View
+    style={{
+      backgroundColor: '#eee',
+      marginHorizontal: 25,
+      height: '100%',
+    }}
+  >
     <FlatList
       data={data}
-      renderItem={({ item }) => <SettingsRowItem item={item} />}
+      renderItem={({ item, index }) => (
+        <SettingsRowItem item={item} index={index} itemCount={data.length} />
+      )}
       keyExtractor={(item) => item.setting}
       // keyboardShouldPersistTaps="always"
     />
