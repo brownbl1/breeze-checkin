@@ -5,7 +5,7 @@ import {
   createDrawerNavigator,
   DrawerNavigationProp,
 } from '@react-navigation/drawer'
-import { useNavigation, NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native'
 
 import { MenuButton } from './MenuButton'
 import {
@@ -16,7 +16,11 @@ import {
   StartingScreen,
 } from '../screens'
 
-const leftNavOpts = (navigation: RootNavigationProp) => ({
+type NavProps = {
+  navigation: RootNavigationProp
+}
+
+const leftNavOpts = ({ navigation }: NavProps) => ({
   headerLeft: () => (
     <MenuButton
       onPress={() => {
@@ -26,42 +30,38 @@ const leftNavOpts = (navigation: RootNavigationProp) => ({
   ),
 })
 
-type HomeStackParamList = {
+export type HomeStackParamList = {
   Home: undefined
   Family: undefined
 }
 
 const HomeStack = createStackNavigator<HomeStackParamList>()
 const RootHomeStack = () => {
-  const navigation = useNavigation<RootNavigationProp>()
-
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen
         name="Home"
         component={HomeScreen}
-        options={leftNavOpts(navigation)}
+        options={leftNavOpts}
       />
       <HomeStack.Screen name="Family" component={FamilyScreen} />
     </HomeStack.Navigator>
   )
 }
 
-type SettingsStackParamList = {
+export type SettingsStackParamList = {
   Settings: undefined
 }
 
 const SettingsStack = createStackNavigator<SettingsStackParamList>()
 
 const RootSettingsStack = () => {
-  const navigation = useNavigation<RootNavigationProp>()
-
   return (
     <SettingsStack.Navigator>
       <SettingsStack.Screen
         name="Settings"
         component={SettingsScreen}
-        options={leftNavOpts(navigation)}
+        options={leftNavOpts}
       />
     </SettingsStack.Navigator>
   )

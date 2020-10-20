@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import { useNavigation } from '@react-navigation/native'
 import { View, Image } from 'react-native'
 import { connect } from 'react-redux'
 import { Search } from './SearchBar'
@@ -8,6 +7,8 @@ import { Dispatch, RootState } from '../../store'
 import { BreezeEvent, Person } from '../../models/dataModel'
 import { AttendanceState } from '../../models/attendance'
 import { TeacherAttendanceState } from '../../models/teacherAttendance'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { HomeStackParamList } from '../../navigation/AppNavigator'
 
 const logo = require('../../assets/logo.png')
 
@@ -37,10 +38,15 @@ type UpdateHeader = {
   teacherAttendance: TeacherAttendanceState
 }
 
+type HomeNavigationProp = {
+  navigation: StackNavigationProp<HomeStackParamList, 'Home'>
+}
+
 type Props = {
   goToFamily: () => void
   updateHeader: (args: UpdateHeader) => void
-} & ReturnType<typeof mapState> &
+} & HomeNavigationProp &
+  ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>
 
 const ScreenContents: React.FC<Props> = ({
@@ -97,9 +103,8 @@ const ScreenContents: React.FC<Props> = ({
 
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
-export const HomeScreen: React.FC = () => {
-  const navigation = useNavigation()
-  const goToFamily = () => navigation.navigate('Family')
+export const HomeScreen: React.FC<HomeNavigationProp> = (props) => {
+  const goToFamily = () => props.navigation.navigate('Family')
 
   const updateHeader = ({
     event,
@@ -109,11 +114,15 @@ export const HomeScreen: React.FC = () => {
   }: UpdateHeader) => {
     if (event) {
       const title = `${event.name} - ${date} (${attendance.length}, ${teacherAttendance.length})`
-      navigation.setOptions({ title })
+      props.navigation.setOptions({ title })
     }
   }
 
   return (
-    <ConnectedContents goToFamily={goToFamily} updateHeader={updateHeader} />
+    <ConnectedContents
+      {...props}
+      goToFamily={goToFamily}
+      updateHeader={updateHeader}
+    />
   )
 }

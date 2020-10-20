@@ -5,7 +5,6 @@ import { Alert } from 'react-native'
 import { Button } from 'react-native-elements'
 import { Action } from '@rematch/core'
 import Toast from 'react-native-root-toast'
-import { useNavigation } from '@react-navigation/native'
 
 import { FamilyList } from './FamilyList'
 import { printLabels } from './printLabels'
@@ -15,6 +14,8 @@ import { Attendance, CommonPersonDetails } from '../../models/dataModel'
 import { PrintDetailsState } from '../../models/printDetails'
 import { RelationshipsState } from '../../models/selectedChildRelationships'
 import { Printer } from '../../models/printer'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { HomeStackParamList } from '../../navigation/AppNavigator'
 
 export type FamilyRowData = {
   thumb_path: string
@@ -52,10 +53,15 @@ const mapDispatch = (dispatch: Dispatch) => ({
   setText: dispatch.searchText.set,
 })
 
+type FamilyNavigationProp = {
+  navigation: StackNavigationProp<HomeStackParamList, 'Family'>
+}
+
 type Props = {
   goHome: () => void
   setTitle: (name: string) => void
-} & ReturnType<typeof mapState> &
+} & FamilyNavigationProp &
+  ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>
 
 const hasPin = ({ printDetails }: { printDetails: PrintDetailsState }) =>
@@ -272,9 +278,9 @@ const ScreenContents: React.FC<Props> = ({
 
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
-export const FamilyScreen: React.FC = () => {
-  const navigation = useNavigation()
-  const goHome = () => navigation.goBack()
-  const setTitle = (name: string) => navigation.setOptions({ title: name })
-  return <ConnectedContents goHome={goHome} setTitle={setTitle} />
+export const FamilyScreen: React.FC<FamilyNavigationProp> = (props) => {
+  const goHome = () => props.navigation.goBack()
+  const setTitle = (name: string) =>
+    props.navigation.setOptions({ title: name })
+  return <ConnectedContents {...props} goHome={goHome} setTitle={setTitle} />
 }

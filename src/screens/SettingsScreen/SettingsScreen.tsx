@@ -1,7 +1,9 @@
+import { StackNavigationProp } from '@react-navigation/stack'
 import React from 'react'
 import { View, Text, FlatList, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import { setPrinter } from '../../helpers/getPrinter'
+import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
 
 type Setting = {
@@ -68,7 +70,13 @@ const mapDispatch = (dispatch: Dispatch) => ({
   },
 })
 
-type Props = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>
+type SettingsNavigationProp = {
+  navigation: StackNavigationProp<SettingsStackParamList, 'Settings'>
+}
+
+type Props = SettingsNavigationProp &
+  ReturnType<typeof mapState> &
+  ReturnType<typeof mapDispatch>
 
 const ScreenContents: React.FC<Props> = ({
   onPressPrinter,
@@ -95,6 +103,6 @@ const ScreenContents: React.FC<Props> = ({
 
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
-export const SettingsScreen: React.FC = () => {
-  return <ConnectedContents />
+export const SettingsScreen: React.FC<SettingsNavigationProp> = (props) => {
+  return <ConnectedContents {...props} />
 }
