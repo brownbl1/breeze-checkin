@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text } from 'react-native'
-import Sentry from 'sentry-expo'
+import * as Sentry from 'sentry-expo'
 import { store } from './store'
 
 export class SentryBoundary extends React.Component {
@@ -13,18 +13,20 @@ export class SentryBoundary extends React.Component {
   }
 
   componentDidCatch = (error: any, errorInfo: any) => {
-    const eventId = Sentry.Native.captureException(error, {
-      extra: {
-        state: store.getState(),
-        errorInfo,
-      },
-    })
+    if (!__DEV__) {
+      const eventId = Sentry.Native.captureException(error, {
+        extra: {
+          state: store.getState(),
+          errorInfo,
+        },
+      })
 
-    this.setState({
-      error,
-      errorInfo,
-      eventId,
-    })
+      this.setState({
+        error,
+        errorInfo,
+        eventId,
+      })
+    }
   }
 
   render = () =>

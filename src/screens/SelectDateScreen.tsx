@@ -7,22 +7,32 @@ import { Button } from 'react-native-elements'
 import { connect } from 'react-redux'
 
 import { DOW } from '../env'
-import { Dispatch } from '../store'
+import { Dispatch, RootState } from '../store'
+
+const mapState = ({ settings }: RootState) => ({ settings })
 
 const mapDispatch = (dispatch: Dispatch) => ({
-  fetchEvents: dispatch.settings.setDateAsync,
+  setDateAsync: dispatch.settings.setDateAsync,
 })
 
 type Props = {
-  goHome: () => void
-} & ReturnType<typeof mapDispatch>
+  goBack: () => void
+} & ReturnType<typeof mapDispatch> &
+  ReturnType<typeof mapState>
 
-const ScreenContents: React.FC<Props> = ({ fetchEvents, goHome }) => {
-  const [date, setDate] = useState(new Date())
+const ScreenContents: React.FC<Props> = ({
+  settings,
+  setDateAsync,
+  goBack,
+}) => {
+  const d = settings.date
+    ? moment(settings.date, 'M/D/YYYY').toDate()
+    : new Date()
+  const [date, setDate] = useState(d)
 
   const fetchEventsForDate = useCallback(async () => {
-    await fetchEvents(date)
-    goHome()
+    await setDateAsync(date)
+    goBack()
   }, [date])
 
   return (
@@ -51,10 +61,10 @@ const ScreenContents: React.FC<Props> = ({ fetchEvents, goHome }) => {
   )
 }
 
-const ConnectedContents = connect(null, mapDispatch)(ScreenContents)
+const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
 export const SelectDateScreen: React.FC = () => {
   const navigation = useNavigation()
-  const goHome = () => navigation.navigate('Home')
-  return <ConnectedContents goHome={goHome} />
+  const goBack = () => navigation.goBack()
+  return <ConnectedContents goBack={goBack} />
 }

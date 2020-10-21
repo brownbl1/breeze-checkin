@@ -10,7 +10,7 @@ export type Settings = {
 
 export const getSettings = async (): Promise<Settings | null> => {
   const settingsString = await AsyncStorage.getItem('settings')
-  return settingsString ?? JSON.parse(settingsString)
+  return settingsString && JSON.parse(settingsString)
 }
 
 export const setSettings = async (settings: Settings) => {

@@ -1,7 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack'
-import Print from 'expo-print'
+import { selectPrinterAsync } from 'expo-print'
 import Constants from 'expo-constants'
-import React, { useState } from 'react'
+import React from 'react'
 import {
   View,
   Text,
@@ -12,7 +12,8 @@ import {
 import { connect } from 'react-redux'
 import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
-import { DateModal } from './DateModal'
+import { Icon } from 'react-native-elements'
+import moment from 'moment'
 
 function Spacer() {
   return (
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
 type Setting = {
   setting: string
   value: string
+  showArrow: boolean
   onPress: () => Promise<void>
 }
 
@@ -78,6 +80,7 @@ const SettingsRowItem = ({ item, index, itemCount }: ItemProps) => {
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
+            alignItems: 'center',
             backgroundColor: 'white',
             padding: 13,
             borderColor: 'white',
@@ -86,7 +89,18 @@ const SettingsRowItem = ({ item, index, itemCount }: ItemProps) => {
           }}
         >
           <Text>{item.setting}</Text>
-          <Text style={{ color: '#888' }}>{item.value}</Text>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+          >
+            <Text style={{ color: '#888' }}>{item.value}</Text>
+            {item.showArrow && (
+              <Icon name="keyboard-arrow-right" color="#888888" />
+            )}
+          </View>
         </View>
         {index !== itemCount - 1 && <Spacer />}
       </React.Fragment>
@@ -123,7 +137,7 @@ const mapState = ({ settings }: RootState) => ({
 
 const setPrinter = async () => {
   const selected = Constants.platform.ios
-    ? await Print.selectPrinterAsync()
+    ? await selectPrinterAsync()
     : { name: "Tom's Printer", url: 'ipps://someaddr' }
 
   return selected
@@ -134,15 +148,12 @@ const mapDispatch = (dispatch: Dispatch) => ({
     try {
       const printer = await setPrinter()
       if (printer) {
-        dispatch.printer.select(printer)
+        dispatch.settings.setPrinterAsync(printer)
       }
     } catch (error) {
       const err = error as Error
       if (err.message !== 'Printer picker has been cancelled') throw err
     }
-  },
-  onPressDate: async (date: Date) => {
-    dispatch.settings.setDateAsync(date)
   },
 })
 
@@ -157,37 +168,29 @@ type Props = SettingsNavigationProp &
 const ScreenContents: React.FC<Props> = ({
   settings,
   onPressPrinter,
-  onPressDate,
+  navigation,
 }) => {
-  const [dateModalVisible, setDateModalVisible] = useState(false)
+  const dateString =
+    settings.date && moment(settings.date, 'M/D/YYYY').format('ddd, M/D/YYYY')
 
-  const dateModalOnClose = (date: Date) => {
-    onPressDate(date)
-  }
-
-  const printerName = settings.printer.name ?? 'None'
-
-  const data = [
+  const data: Setting[] = [
     {
       setting: 'Printer',
-      value: printerName,
+      value: settings.printer.name ?? 'None',
+      showArrow: false,
       onPress: onPressPrinter,
     },
     {
       setting: 'Event Date',
-      value: settings.date,
+      value: dateString ?? 'None',
+      showArrow: true,
       onPress: async () => {
-        setDateModalVisible(true)
+        navigation.navigate('Select Date')
       },
     },
   ]
 
-  return (
-    <React.Fragment>
-      <List data={data} />
-      <DateModal modalVisible={dateModalVisible} onClose={dateModalOnClose} />
-    </React.Fragment>
-  )
+  return <List data={data} />
 }
 
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)

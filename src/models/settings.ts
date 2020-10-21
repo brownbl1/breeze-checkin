@@ -36,7 +36,7 @@ export const settings = createModel<RootModel>()({
   effects: (dispatch) => ({
     setAllAsync: async (settings: Settings) => {
       dispatch.settings.setAll(settings)
-      dispatch.event.selectAsync(settings.date)
+      await dispatch.events.selectAsync()
     },
     setPrinterAsync: async (printer: Printer, rootState) => {
       const { settings } = rootState
@@ -49,17 +49,24 @@ export const settings = createModel<RootModel>()({
       await setSettings({ ...settings, date: d })
       dispatch.settings.setDate(d)
 
-      if (settings.entrustEventId) dispatch.event.selectAsync(d)
+      if (settings.entrustEventId && settings.teacherEventId)
+        await dispatch.events.selectAsync()
     },
     setEntrustEventIdAsync: async (entrustEventId: string, rootState) => {
       const { settings } = rootState
       await setSettings({ ...settings, entrustEventId })
       dispatch.settings.setEntrustEventId(entrustEventId)
+
+      if (settings.date && settings.teacherEventId)
+        await dispatch.events.selectAsync()
     },
     setTeacherEventIdAsync: async (teacherEventId: string, rootState) => {
       const { settings } = rootState
       await setSettings({ ...settings, teacherEventId })
       dispatch.settings.setTeacherEventId(teacherEventId)
+
+      if (settings.date && settings.entrustEventId)
+        await dispatch.events.selectAsync()
     },
   }),
 })

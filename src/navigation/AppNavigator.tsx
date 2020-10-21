@@ -14,6 +14,7 @@ import {
   FamilyScreen,
   SettingsScreen,
   StartingScreen,
+  SelectDateScreen,
 } from '../screens'
 
 type NavProps = {
@@ -51,6 +52,7 @@ const RootHomeStack = () => {
 
 export type SettingsStackParamList = {
   Settings: undefined
+  'Select Date': undefined
 }
 
 const SettingsStack = createStackNavigator<SettingsStackParamList>()
@@ -63,6 +65,7 @@ const RootSettingsStack = () => {
         component={SettingsScreen}
         options={leftNavOpts}
       />
+      <SettingsStack.Screen name="Select Date" component={SelectDateScreen} />
     </SettingsStack.Navigator>
   )
 }
