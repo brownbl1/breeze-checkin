@@ -39,29 +39,31 @@ export class SentryBoundary extends React.Component {
         }}
       >
         <Text>Something went wrong.</Text>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Text>Event Id: </Text>
+        {this.state.eventId && (
           <View
             style={{
-              backgroundColor: 'rgba(27,31,35,.05)',
-              borderColor: 'rgba(27,31,35,.05)',
-              borderRadius: 3,
-              paddingTop: 3.2,
-              paddingBottom: 3.2,
-              paddingLeft: 6.4,
-              paddingRight: 6.4,
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
-            <Text>{this.state.eventId}</Text>
+            <Text>Event Id: </Text>
+            <View
+              style={{
+                backgroundColor: 'rgba(27,31,35,.05)',
+                borderColor: 'rgba(27,31,35,.05)',
+                borderRadius: 3,
+                paddingTop: 3.2,
+                paddingBottom: 3.2,
+                paddingLeft: 6.4,
+                paddingRight: 6.4,
+              }}
+            >
+              <Text>{this.state.eventId}</Text>
+            </View>
           </View>
-        </View>
+        )}
       </View>
     ) : (
       this.props.children

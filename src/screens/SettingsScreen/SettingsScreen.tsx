@@ -2,138 +2,15 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import { selectPrinterAsync } from 'expo-print'
 import Constants from 'expo-constants'
 import React from 'react'
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native'
+import { View, Text } from 'react-native'
 import { connect } from 'react-redux'
-import { SettingsStackParamList } from '../../navigation/AppNavigator'
-import { Dispatch, RootState } from '../../store'
 import { Icon } from 'react-native-elements'
 import moment from 'moment'
 
-function Spacer() {
-  return (
-    <View
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-      }}
-    >
-      <View
-        style={{
-          backgroundColor: 'white',
-          height: 1,
-          width: 13,
-        }}
-      />
-      <View
-        style={{
-          backgroundColor: '#eee',
-          height: 1,
-        }}
-      />
-    </View>
-  )
-}
-
-const styles = StyleSheet.create({
-  topBorder: {
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
-    borderTopWidth: 1,
-    marginTop: 25,
-  },
-  bottomBorder: {
-    borderBottomLeftRadius: 6,
-    borderBottomRightRadius: 6,
-    borderBottomWidth: 1,
-  },
-})
-
-type Setting = {
-  setting: string
-  value: string
-  showArrow: boolean
-  onPress: () => Promise<void>
-}
-
-type ItemProps = {
-  item: Setting
-  index: number
-  itemCount: number
-}
-
-const SettingsRowItem = ({ item, index, itemCount }: ItemProps) => {
-  const onPress = () => {
-    item.onPress()
-  }
-
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <React.Fragment>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            backgroundColor: 'white',
-            padding: 13,
-            borderColor: 'white',
-            ...(index === 0 && styles.topBorder),
-            ...(index === itemCount - 1 && styles.bottomBorder),
-          }}
-        >
-          <Text>{item.setting}</Text>
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-          >
-            <Text style={{ color: '#888' }}>{item.value}</Text>
-            {item.showArrow && (
-              <Icon name="keyboard-arrow-right" color="#888888" />
-            )}
-          </View>
-        </View>
-        {index !== itemCount - 1 && <Spacer />}
-      </React.Fragment>
-    </TouchableOpacity>
-  )
-}
-
-type ListProps = {
-  data: Setting[]
-}
-
-const List = ({ data }: ListProps) => (
-  <View
-    style={{
-      backgroundColor: '#eee',
-      marginHorizontal: 25,
-      height: '100%',
-    }}
-  >
-    <FlatList
-      data={data}
-      renderItem={({ item, index }) => (
-        <SettingsRowItem item={item} index={index} itemCount={data.length} />
-      )}
-      keyExtractor={(item) => item.setting}
-      keyboardShouldPersistTaps="always"
-    />
-  </View>
-)
-
-const mapState = ({ settings }: RootState) => ({
-  settings,
-})
+import { SettingsStackParamList } from '../../navigation/AppNavigator'
+import { Dispatch, RootState } from '../../store'
+import { daysOfWeek } from '../../helpers/getSettings'
+import { SettingsList } from '../../components/SettingsList'
 
 const setPrinter = async () => {
   const selected = Constants.platform.ios
@@ -142,6 +19,11 @@ const setPrinter = async () => {
 
   return selected
 }
+
+const mapState = ({ settings, events }: RootState) => ({
+  settings,
+  events,
+})
 
 const mapDispatch = (dispatch: Dispatch) => ({
   onPressPrinter: async () => {
@@ -173,7 +55,7 @@ const ScreenContents: React.FC<Props> = ({
   const dateString =
     settings.date && moment(settings.date, 'M/D/YYYY').format('ddd, M/D/YYYY')
 
-  const data: Setting[] = [
+  const data = [
     {
       setting: 'Printer',
       value: settings.printer.name ?? 'None',
@@ -181,16 +63,55 @@ const ScreenContents: React.FC<Props> = ({
       onPress: onPressPrinter,
     },
     {
+      setting: 'Day of Week',
+      value: daysOfWeek[settings.dayOfWeek],
+      showArrow: true,
+      onPress: () => {
+        navigation.navigate('Select Day of Week', {
+          initialDow: settings.dayOfWeek,
+        })
+      },
+    },
+    {
       setting: 'Event Date',
       value: dateString ?? 'None',
       showArrow: true,
-      onPress: async () => {
+      onPress: () => {
         navigation.navigate('Select Date')
       },
     },
   ]
 
-  return <List data={data} />
+  return (
+    <View
+      style={{
+        backgroundColor: '#eee',
+        marginHorizontal: 25,
+        height: '100%',
+      }}
+    >
+      <SettingsList
+        data={data}
+        renderItem={({ item }) => (
+          <React.Fragment>
+            <Text>{item.setting}</Text>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Text style={{ color: '#888' }}>{item.value}</Text>
+              {item.showArrow && (
+                <Icon name="keyboard-arrow-right" color="#888888" />
+              )}
+            </View>
+          </React.Fragment>
+        )}
+      />
+    </View>
+  )
 }
 
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)

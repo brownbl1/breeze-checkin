@@ -38,7 +38,7 @@ export const events = createModel<RootModel>()({
   },
   effects: (dispatch) => ({
     selectAsync: async (_, { settings }) => {
-      dispatch.event.loading()
+      dispatch.events.loading()
 
       const dateString = moment(settings.date, 'M/D/YYYY').format('YYYY-M-D')
       const events = (await fetch(

@@ -1,13 +1,14 @@
 import React, { useState, useCallback } from 'react'
-import { useNavigation } from '@react-navigation/native'
 import { View } from 'react-native'
 import DatePicker from '@react-native-community/datetimepicker'
 import moment from 'moment'
 import { Button } from 'react-native-elements'
 import { connect } from 'react-redux'
 
-import { DOW } from '../env'
-import { Dispatch, RootState } from '../store'
+import { DOW } from '../../env'
+import { Dispatch, RootState } from '../../store'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { SettingsStackParamList } from '../../navigation/AppNavigator'
 
 const mapState = ({ settings }: RootState) => ({ settings })
 
@@ -15,9 +16,14 @@ const mapDispatch = (dispatch: Dispatch) => ({
   setDateAsync: dispatch.settings.setDateAsync,
 })
 
+type SelectDateNavigationProp = {
+  navigation: StackNavigationProp<SettingsStackParamList, 'Select Date'>
+}
+
 type Props = {
   goBack: () => void
-} & ReturnType<typeof mapDispatch> &
+} & SelectDateNavigationProp &
+  ReturnType<typeof mapDispatch> &
   ReturnType<typeof mapState>
 
 const ScreenContents: React.FC<Props> = ({
@@ -63,8 +69,7 @@ const ScreenContents: React.FC<Props> = ({
 
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
-export const SelectDateScreen: React.FC = () => {
-  const navigation = useNavigation()
-  const goBack = () => navigation.goBack()
-  return <ConnectedContents goBack={goBack} />
+export const SelectDateScreen: React.FC<SelectDateNavigationProp> = (props) => {
+  const goBack = () => props.navigation.goBack()
+  return <ConnectedContents {...props} goBack={goBack} />
 }

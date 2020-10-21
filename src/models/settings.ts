@@ -1,12 +1,13 @@
 import { createModel } from '@rematch/core'
 import { Printer } from 'expo-print'
 import moment from 'moment'
-import { setSettings, Settings } from '../helpers/getSettings'
+import { missingSettings, setSettings, Settings } from '../helpers/getSettings'
 import { RootModel } from './models'
 
 export const settings = createModel<RootModel>()({
   state: {
     date: null,
+    dayOfWeek: null,
     entrustEventId: null,
     teacherEventId: null,
     printer: {
@@ -19,6 +20,10 @@ export const settings = createModel<RootModel>()({
     setPrinter: (state, printer: Printer) => ({
       ...state,
       printer,
+    }),
+    setDow: (state, dayOfWeek: number) => ({
+      ...state,
+      dayOfWeek,
     }),
     setDate: (state, date: string) => ({
       ...state,
@@ -35,13 +40,19 @@ export const settings = createModel<RootModel>()({
   },
   effects: (dispatch) => ({
     setAllAsync: async (settings: Settings) => {
+      await setSettings(settings)
       dispatch.settings.setAll(settings)
-      await dispatch.events.selectAsync()
+      if (!missingSettings(settings)) await dispatch.events.selectAsync()
     },
     setPrinterAsync: async (printer: Printer, rootState) => {
       const { settings } = rootState
       await setSettings({ ...settings, printer })
       dispatch.settings.setPrinter(printer)
+    },
+    setDowAsync: async (dayOfWeek: number, rootState) => {
+      const { settings } = rootState
+      await setSettings({ ...settings, dayOfWeek })
+      dispatch.settings.setDow(dayOfWeek)
     },
     setDateAsync: async (date: Date, rootState) => {
       const { settings } = rootState

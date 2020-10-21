@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getSettings } from '../helpers/getSettings'
+import { getSettings, missingSettings } from '../helpers/getSettings'
 import { store } from '../store'
 
 export enum StartingScreen {
@@ -18,27 +18,24 @@ export const useStartingScreen = () => {
       console.log('SETTINGS', settings)
 
       if (settings) {
-        store.dispatch.settings.setAll(settings)
-
-        if (
-          !settings.entrustEventId ||
-          !settings.teacherEventId ||
-          !settings.date ||
-          !settings.printer
-        ) {
-          setStartingScreen(StartingScreen.Settings)
-          return
+        const defaultedSettings = {
+          ...settings,
+          dayOfWeek: settings.dayOfWeek ?? 0,
         }
 
-        await store.dispatch.events.selectAsync()
+        await store.dispatch.settings.setAllAsync(defaultedSettings)
+        setStartingScreen(
+          missingSettings(defaultedSettings)
+            ? StartingScreen.Settings
+            : StartingScreen.Home,
+        )
 
-        setStartingScreen(StartingScreen.Home)
         return
       }
 
       setStartingScreen(StartingScreen.Settings)
     })
-  }, [startingScreen])
+  }, [])
 
   return startingScreen
 }

@@ -15,7 +15,7 @@ export const searchList = createModel<RootModel>()({
     select: (_, payload: EventPerson[]) => {
       return { cache: payload, filtered: [] }
     },
-    'event/loading': () => ({ cache: [], filtered: [] }),
+    'events/loading': () => ({ cache: [], filtered: [] }),
     'searchText/set': ({ cache }, text: string) => {
       const t = text.trim().toLowerCase()
       if (!t || t.length < 3) {
