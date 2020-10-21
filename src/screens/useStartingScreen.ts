@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react'
-
-import { getPrinter } from '../helpers/getPrinter'
-import { getEvent } from '../helpers/getEvent'
+import { getSettings } from '../helpers/getSettings'
 import { store } from '../store'
 
 export enum StartingScreen {
   Loading,
   Home,
-  SelectDate,
+  Settings,
 }
 
 export const useStartingScreen = () => {
@@ -16,23 +14,31 @@ export const useStartingScreen = () => {
   )
 
   useEffect(() => {
-    Promise.all([getPrinter(), getEvent()]).then(
-      async ([printer, eventData]) => {
-        store.dispatch.printer.select(printer ?? '')
+    getSettings().then(async (settings) => {
+      console.log('SETTINGS', settings)
 
-        if (eventData && eventData.event) {
-          store.dispatch.event.select(eventData.event)
-          store.dispatch.event.selectTeacher(eventData.teacherId)
-          store.dispatch.teachers.setAsync(eventData.teacherId)
-          await store.dispatch.eventPeople.selectAsync(eventData.event.id)
-          setStartingScreen(StartingScreen.Home)
+      if (settings) {
+        store.dispatch.settings.setAll(settings)
+
+        if (
+          !settings.entrustEventId ||
+          !settings.teacherEventId ||
+          !settings.date ||
+          !settings.printer
+        ) {
+          setStartingScreen(StartingScreen.Settings)
           return
         }
 
-        setStartingScreen(StartingScreen.SelectDate)
-      },
-    )
-  }, [])
+        await store.dispatch.events.selectAsync()
+
+        setStartingScreen(StartingScreen.Home)
+        return
+      }
+
+      setStartingScreen(StartingScreen.Settings)
+    })
+  }, [startingScreen])
 
   return startingScreen
 }

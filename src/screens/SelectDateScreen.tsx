@@ -10,7 +10,7 @@ import { DOW } from '../env'
 import { Dispatch } from '../store'
 
 const mapDispatch = (dispatch: Dispatch) => ({
-  fetchEvents: dispatch.event.selectAsync,
+  fetchEvents: dispatch.settings.setDateAsync,
 })
 
 type Props = {

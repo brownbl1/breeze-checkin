@@ -4,26 +4,26 @@ import { connect } from 'react-redux'
 import { Search } from './SearchBar'
 import PeopleList from './PeopleList'
 import { Dispatch, RootState } from '../../store'
-import { BreezeEvent, Person } from '../../models/dataModel'
+import { Person } from '../../models/dataModel'
 import { AttendanceState } from '../../models/attendance'
-import { TeacherAttendanceState } from '../../models/teacherAttendance'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { HomeStackParamList } from '../../navigation/AppNavigator'
+import { EventState } from '../../models/events'
 
 const logo = require('../../assets/logo.png')
 
 const mapState = ({
-  event,
-  eventPeople,
+  events,
   searchText,
+  searchList,
   attendance,
-  teacherAttendance,
+  settings: { date },
 }: RootState) => ({
-  event,
-  eventPeople,
+  events,
   searchText,
   attendance,
-  teacherAttendance,
+  date,
+  searchList,
 })
 
 const mapDispatch = (dispatch: Dispatch) => ({
@@ -32,10 +32,9 @@ const mapDispatch = (dispatch: Dispatch) => ({
 })
 
 type UpdateHeader = {
-  event: BreezeEvent
+  events: EventState
   date: string
   attendance: AttendanceState
-  teacherAttendance: TeacherAttendanceState
 }
 
 type HomeNavigationProp = {
@@ -52,18 +51,17 @@ type Props = {
 const ScreenContents: React.FC<Props> = ({
   searchText,
   onChangeText,
-  eventPeople: { filtered },
+  searchList: { filtered },
   onSelectPerson,
-  event: { event },
-  event: { date },
+  events,
   attendance,
-  teacherAttendance,
   goToFamily,
   updateHeader,
+  date,
 }) => {
   useEffect(() => {
-    updateHeader({ event, date, attendance, teacherAttendance })
-  }, [event, attendance, teacherAttendance])
+    updateHeader({ events, date, attendance })
+  }, [events, date, attendance])
 
   const onPress = async (item: Person) => {
     await onSelectPerson(item)
@@ -106,14 +104,10 @@ const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 export const HomeScreen: React.FC<HomeNavigationProp> = (props) => {
   const goToFamily = () => props.navigation.navigate('Family')
 
-  const updateHeader = ({
-    event,
-    date,
-    attendance,
-    teacherAttendance,
-  }: UpdateHeader) => {
-    if (event) {
-      const title = `${event.name} - ${date} (${attendance.length}, ${teacherAttendance.length})`
+  const updateHeader = ({ events, date, attendance }: UpdateHeader) => {
+    if (events.entrustEvent) {
+      const { entrustAttendance, teacherAttendance } = attendance
+      const title = `${events.entrustEvent.name} - ${date} (${entrustAttendance.length}, ${teacherAttendance.length})`
       props.navigation.setOptions({ title })
     }
   }

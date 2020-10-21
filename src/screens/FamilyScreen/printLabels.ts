@@ -9,7 +9,7 @@ import { ALLERGIES_KEY, ENTRUST_KEY } from '../../env'
 import { PrintDetailsState } from '../../models/printDetails'
 import { RelationshipsState } from '../../models/selectedChildRelationships'
 import { CommonPersonDetails } from '../../models/dataModel'
-import { Printer } from '../../models/printer'
+import { Printer } from 'expo-print'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 

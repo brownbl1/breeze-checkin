@@ -13,9 +13,9 @@ import { Dispatch, RootState } from '../../store'
 import { Attendance, CommonPersonDetails } from '../../models/dataModel'
 import { PrintDetailsState } from '../../models/printDetails'
 import { RelationshipsState } from '../../models/selectedChildRelationships'
-import { Printer } from '../../models/printer'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { HomeStackParamList } from '../../navigation/AppNavigator'
+import { Printer } from 'expo-print'
 
 export type FamilyRowData = {
   thumb_path: string
@@ -35,20 +35,20 @@ const mapState = ({
   selectedChildRelationships,
   attendance,
   printDetails,
-  printer,
-  teachers,
+  settings: { printer },
+  events: { teacherEventPeople },
 }: RootState) => ({
   selectedChild,
   selectedChildRelationships,
   attendance,
   printDetails,
   printer,
-  teachers,
+  teacherEventPeople,
 })
 
 const mapDispatch = (dispatch: Dispatch) => ({
   toggleChecked: dispatch.selectedChildRelationships.toggleChecked,
-  checkIn: dispatch.attendance.checkInAsync,
+  checkIn: dispatch.attendance.checkInChildAsync,
   checkInTeacher: dispatch.attendance.checkInTeacherAsync,
   setText: dispatch.searchText.set,
 })
@@ -190,24 +190,24 @@ const enablePrint = ({
 
 const ScreenContents: React.FC<Props> = ({
   selectedChildRelationships,
-  attendance,
+  attendance: { entrustAttendance },
   printDetails,
   toggleChecked,
-  teachers,
-  printer,
+  teacherEventPeople,
   setText,
   goHome,
   checkIn,
   checkInTeacher,
   selectedChild: { name },
   setTitle,
+  printer,
 }) => {
   useEffect(() => {
     setTitle(name)
   }, [name])
 
   const isTeacher = (person_id: string) =>
-    teachers.find(({ id }) => id === person_id)
+    teacherEventPeople.find(({ id }) => id === person_id)
   const isChild = ({
     role_id,
     person_id,
@@ -219,7 +219,9 @@ const ScreenContents: React.FC<Props> = ({
   const data =
     selectedChildRelationships &&
     selectedChildRelationships.map(({ details }) => ({
-      attendance: attendance.find(({ person_id }) => person_id === details.id),
+      attendance: entrustAttendance.find(
+        ({ person_id }) => person_id === details.id,
+      ),
       ...details,
     }))
 

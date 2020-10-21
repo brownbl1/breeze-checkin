@@ -5,14 +5,12 @@ import { SUB } from '../env'
 import { selectedChild } from './selectedChild'
 import { printDetails } from './printDetails'
 import { selectedChildRelationships } from './selectedChildRelationships'
-import { teachers } from './teachers'
-import { event } from './event'
-import { eventPeople } from './eventPeople'
-import { teacherAttendance } from './teacherAttendance'
+import { events } from './events'
+import { searchList } from './searchList'
 import { attendance } from './attendance'
-import { printer } from './printer'
 import { searchText } from './searchText'
 import { EventPerson } from './dataModel'
+import { settings } from './settings'
 
 const placeholder = require('../assets/gray.png')
 
@@ -20,26 +18,22 @@ export interface RootModel extends Models<RootModel> {
   selectedChild: typeof selectedChild
   printDetails: typeof printDetails
   selectedChildRelationships: typeof selectedChildRelationships
-  teachers: typeof teachers
-  event: typeof event
-  eventPeople: typeof eventPeople
+  events: typeof events
   attendance: typeof attendance
-  teacherAttendance: typeof teacherAttendance
-  printer: typeof printer
+  settings: typeof settings
   searchText: typeof searchText
+  searchList: typeof searchList
 }
 
 export const models: RootModel = {
   selectedChild,
   printDetails,
   selectedChildRelationships,
-  teachers,
-  event,
-  eventPeople,
+  events,
   attendance,
-  teacherAttendance,
-  printer,
+  settings,
   searchText,
+  searchList,
 }
 
 export const baseUrl = `https://${SUB}.breezechms.com`

@@ -1,8 +1,6 @@
 import { createModel } from '@rematch/core'
 import { EventPerson } from './dataModel'
-import { RootModel, baseUrl, options, mapPerson } from './models'
-
-let attendanceInterval: number
+import { RootModel } from './models'
 
 const startsWith = (text: string) => (name: string) => name.startsWith(text)
 
@@ -11,7 +9,7 @@ type EventPeopleState = {
   filtered: EventPerson[]
 }
 
-export const eventPeople = createModel<RootModel>()({
+export const searchList = createModel<RootModel>()({
   state: { cache: [], filtered: [] } as EventPeopleState,
   reducers: {
     select: (_, payload: EventPerson[]) => {
@@ -33,24 +31,4 @@ export const eventPeople = createModel<RootModel>()({
       return { cache, filtered }
     },
   },
-  effects: (dispatch) => ({
-    selectAsync: async (eventId: string) => {
-      const json = (await fetch(
-        `${baseUrl}/api/events/attendance/eligible?instance_id=${eventId}`,
-        options,
-      ).then((res) => res.json())) as EventPerson[]
-
-      const people = json.filter(({ first_name }) => first_name).map(mapPerson)
-
-      dispatch.eventPeople.select(people)
-
-      clearInterval(attendanceInterval)
-
-      dispatch.attendance.fetchAsync(eventId)
-      attendanceInterval = setInterval(
-        () => dispatch.attendance.fetchAsync(eventId),
-        1000 * 60 * 1, // 5 minutes
-      )
-    },
-  }),
 })

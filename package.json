@@ -1,6 +1,7 @@
 {
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
+    "postinstall": "patch-package",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -36,6 +37,8 @@
     "@types/react-native": "~0.63.2",
     "@types/react-redux": "^7.1.1",
     "babel-preset-expo": "^8.3.0",
+    "patch-package": "^6.2.2",
+    "postinstall-postinstall": "^2.1.0",
     "typescript": "~3.9.2"
   },
   "resolutions": {

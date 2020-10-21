@@ -1,5 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack'
-import React from 'react'
+import Print from 'expo-print'
+import Constants from 'expo-constants'
+import React, { useState } from 'react'
 import {
   View,
   Text,
@@ -8,9 +10,9 @@ import {
   StyleSheet,
 } from 'react-native'
 import { connect } from 'react-redux'
-import { setPrinter } from '../../helpers/getPrinter'
 import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
+import { DateModal } from './DateModal'
 
 function Spacer() {
   return (
@@ -64,12 +66,12 @@ type ItemProps = {
 }
 
 const SettingsRowItem = ({ item, index, itemCount }: ItemProps) => {
+  const onPress = () => {
+    item.onPress()
+  }
+
   return (
-    <TouchableOpacity
-      onPress={() => {
-        item.onPress()
-      }}
-    >
+    <TouchableOpacity onPress={onPress}>
       <React.Fragment>
         <View
           style={{
@@ -110,22 +112,37 @@ const List = ({ data }: ListProps) => (
         <SettingsRowItem item={item} index={index} itemCount={data.length} />
       )}
       keyExtractor={(item) => item.setting}
-      // keyboardShouldPersistTaps="always"
+      keyboardShouldPersistTaps="always"
     />
   </View>
 )
 
-const mapState = ({ printer }: RootState) => ({ printer })
+const mapState = ({ settings }: RootState) => ({
+  settings,
+})
+
+const setPrinter = async () => {
+  const selected = Constants.platform.ios
+    ? await Print.selectPrinterAsync()
+    : { name: "Tom's Printer", url: 'ipps://someaddr' }
+
+  return selected
+}
 
 const mapDispatch = (dispatch: Dispatch) => ({
   onPressPrinter: async () => {
-    const printer = await setPrinter()
-    if (printer) {
-      dispatch.printer.select(printer)
+    try {
+      const printer = await setPrinter()
+      if (printer) {
+        dispatch.printer.select(printer)
+      }
+    } catch (error) {
+      const err = error as Error
+      if (err.message !== 'Printer picker has been cancelled') throw err
     }
   },
-  onPressDate: async () => {
-    // dispatch.
+  onPressDate: async (date: Date) => {
+    dispatch.settings.setDateAsync(date)
   },
 })
 
@@ -138,11 +155,17 @@ type Props = SettingsNavigationProp &
   ReturnType<typeof mapDispatch>
 
 const ScreenContents: React.FC<Props> = ({
+  settings,
   onPressPrinter,
-  printer,
   onPressDate,
 }) => {
-  const printerName = printer.name ?? 'None'
+  const [dateModalVisible, setDateModalVisible] = useState(false)
+
+  const dateModalOnClose = (date: Date) => {
+    onPressDate(date)
+  }
+
+  const printerName = settings.printer.name ?? 'None'
 
   const data = [
     {
@@ -152,12 +175,19 @@ const ScreenContents: React.FC<Props> = ({
     },
     {
       setting: 'Event Date',
-      value: 'None',
-      onPress: onPressDate,
+      value: settings.date,
+      onPress: async () => {
+        setDateModalVisible(true)
+      },
     },
   ]
 
-  return <List data={data} />
+  return (
+    <React.Fragment>
+      <List data={data} />
+      <DateModal modalVisible={dateModalVisible} onClose={dateModalOnClose} />
+    </React.Fragment>
+  )
 }
 
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)

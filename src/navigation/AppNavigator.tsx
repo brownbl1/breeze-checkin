@@ -97,7 +97,7 @@ const SwitchRoot = () => {
       return <AppLoading />
     case StartingScreen.Home:
       return <RootDrawer initialRouteName="Home" />
-    case StartingScreen.SelectDate:
+    case StartingScreen.Settings:
       return <RootDrawer initialRouteName="Settings" /> // TODO: add params to open date picker
   }
 }
