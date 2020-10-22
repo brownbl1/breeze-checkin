@@ -25,6 +25,9 @@ export const settings = createModel<RootModel>()({
     }),
     setDow: (state, dayOfWeek: number) => ({
       ...state,
+      date: null,
+      entrustEventId: null,
+      teacherEventId: null,
       dayOfWeek,
     }),
     setNumParentTags: (state, numParentTags: number) => ({
@@ -58,8 +61,15 @@ export const settings = createModel<RootModel>()({
     },
     setDowAsync: async (dayOfWeek: number, rootState) => {
       const { settings } = rootState
-      await setSettings({ ...settings, dayOfWeek })
+      await setSettings({
+        ...settings,
+        date: null,
+        entrustEventId: null,
+        teacherEventId: null,
+        dayOfWeek,
+      })
       dispatch.settings.setDow(dayOfWeek)
+      dispatch.events.clear()
     },
     setNumParentTagsAsync: async (numParentTags: number, rootState) => {
       const { settings } = rootState
@@ -69,8 +79,12 @@ export const settings = createModel<RootModel>()({
     setDateAsync: async (date: Date, rootState) => {
       const { settings } = rootState
       const d = moment(date).format('M/D/YYYY')
-      await setSettings({ ...settings, date: d })
+      await setSettings({
+        ...settings,
+        date: d,
+      })
       dispatch.settings.setDate(d)
+      dispatch.events.clear()
 
       if (settings.date && settings.entrustEventId && settings.teacherEventId)
         await dispatch.events.selectAsync()

@@ -2,6 +2,7 @@ import { createModel, RematchDispatch } from '@rematch/core'
 import moment from 'moment'
 import { RootModel, baseUrl, options, mapPerson } from './models'
 import { Attendance, BreezeEvent, EventPerson } from './dataModel'
+import { store } from '../store'
 
 export type EventState = {
   entrustEvent: BreezeEvent
@@ -37,6 +38,13 @@ export const events = createModel<RootModel>()({
       loading: false,
     }),
     loading: (state) => ({ ...state, loading: true }),
+    clear: (state) => ({
+      ...state,
+      entrustEvent: null,
+      teacherEvent: null,
+      entrustEventPeople: null,
+      teacherEventPeople: null,
+    }),
   },
   effects: (dispatch) => ({
     getEventsForDate: async (_, { settings }) => {
@@ -50,6 +58,8 @@ export const events = createModel<RootModel>()({
     },
     selectAsync: async (_, { settings }) => {
       dispatch.events.loading()
+
+      if (!settings.date) return
 
       const dateString = moment(settings.date, 'M/D/YYYY').format('YYYY-M-D')
       const events = (await fetch(
