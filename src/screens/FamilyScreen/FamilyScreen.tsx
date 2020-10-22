@@ -190,7 +190,7 @@ const enablePrint = ({
 
 const ScreenContents: React.FC<Props> = ({
   selectedChildRelationships,
-  attendance: { entrustAttendance },
+  attendance: { entrustAttendance, teacherAttendance },
   printDetails,
   toggleChecked,
   teacherEventPeople,
@@ -216,12 +216,11 @@ const ScreenContents: React.FC<Props> = ({
     person_id: string
   }) => role_id === '2' && !isTeacher(person_id)
 
+  const attendance = [...entrustAttendance, ...teacherAttendance]
   const data =
     selectedChildRelationships &&
     selectedChildRelationships.map(({ details }) => ({
-      attendance: entrustAttendance.find(
-        ({ person_id }) => person_id === details.id,
-      ),
+      attendance: attendance.find(({ person_id }) => person_id === details.id),
       ...details,
     }))
 

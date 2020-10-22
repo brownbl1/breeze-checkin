@@ -13,7 +13,7 @@ export const searchList = createModel<RootModel>()({
   state: { cache: [], filtered: [] } as EventPeopleState,
   reducers: {
     select: (_, payload: EventPerson[]) => {
-      return { cache: payload, filtered: [] }
+      return { cache: payload || [], filtered: [] }
     },
     'events/loading': () => ({ cache: [], filtered: [] }),
     'searchText/set': ({ cache }, text: string) => {

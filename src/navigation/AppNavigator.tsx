@@ -16,6 +16,7 @@ import {
   StartingScreen,
   SelectDateScreen,
   SelectDowScreen,
+  SelectEventScreen,
 } from '../screens'
 
 type NavProps = {
@@ -69,6 +70,7 @@ const RootSettingsStack = () => {
         options={leftNavOpts}
       />
       <SettingsStack.Screen name="Select Date" component={SelectDateScreen} />
+      <SettingsStack.Screen name="Select Event" component={SelectEventScreen} />
       <SettingsStack.Screen
         name="Select Day of Week"
         component={SelectDowScreen}
@@ -108,7 +110,7 @@ const SwitchRoot = () => {
     case StartingScreen.Home:
       return <RootDrawer initialRouteName="Home" />
     case StartingScreen.Settings:
-      return <RootDrawer initialRouteName="Settings" /> // TODO: add params to open date picker
+      return <RootDrawer initialRouteName="Settings" />
   }
 }
 

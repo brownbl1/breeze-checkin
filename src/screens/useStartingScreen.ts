@@ -15,8 +15,6 @@ export const useStartingScreen = () => {
 
   useEffect(() => {
     getSettings().then(async (settings) => {
-      console.log('SETTINGS', settings)
-
       if (settings) {
         const defaultedSettings = {
           ...settings,

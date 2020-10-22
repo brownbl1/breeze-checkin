@@ -61,7 +61,7 @@ const FamilyRowItem: React.FC<RowItemProps> = ({
         <Icon name="checkbox-marked" type="material-community" />
       )}
       {item.attendance && !item.checked && (
-        <Icon name="checkbox-blank" type="material-community" />
+        <Icon name="checkbox-intermediate" type="material-community" />
       )}
       {!item.attendance && !item.checked && (
         <Icon name="checkbox-blank-outline" type="material-community" />

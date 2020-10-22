@@ -52,7 +52,6 @@ export const printLabels = async ({
 
   const printAsync = (html: string) =>
     Print.printAsync({
-      // printerUrl: printer.url,
       printerUrl: printer.url.replace('ipps', 'ipp'),
       orientation: Print.Orientation.landscape,
       markupFormatterIOS: html,

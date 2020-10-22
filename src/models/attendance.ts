@@ -27,10 +27,10 @@ export const attendance = createModel<RootModel>()({
     },
     checkInTeacherAsync: async (
       personId: string,
-      { events: { teacherEventId } },
+      { events: { teacherEvent } },
     ) => {
       await fetch(
-        `${baseUrl}/api/events/attendance/add?person_id=${personId}&instance_id=${teacherEventId}`,
+        `${baseUrl}/api/events/attendance/add?person_id=${personId}&instance_id=${teacherEvent.id}`,
         options,
       )
     },

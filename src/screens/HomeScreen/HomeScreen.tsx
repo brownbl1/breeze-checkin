@@ -61,7 +61,13 @@ const ScreenContents: React.FC<Props> = ({
 }) => {
   useEffect(() => {
     updateHeader({ events, date, attendance })
-  }, [events, date, attendance])
+  }, [
+    events.entrustEvent,
+    events.teacherEvent,
+    date,
+    attendance.entrustAttendance,
+    attendance.teacherAttendance,
+  ])
 
   const onPress = async (item: Person) => {
     await onSelectPerson(item)
@@ -99,6 +105,16 @@ const ScreenContents: React.FC<Props> = ({
   )
 }
 
+const getHeaderString = ({ events, attendance, date }: UpdateHeader) => {
+  const { entrustAttendance, teacherAttendance } = attendance
+  const title = `${events.entrustEvent.name} - ${date}`
+  if (entrustAttendance && teacherAttendance) {
+    return `${title} (${entrustAttendance.length}, ${teacherAttendance.length})`
+  }
+
+  return title
+}
+
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
 export const HomeScreen: React.FC<HomeNavigationProp> = (props) => {
@@ -106,8 +122,7 @@ export const HomeScreen: React.FC<HomeNavigationProp> = (props) => {
 
   const updateHeader = ({ events, date, attendance }: UpdateHeader) => {
     if (events.entrustEvent) {
-      const { entrustAttendance, teacherAttendance } = attendance
-      const title = `${events.entrustEvent.name} - ${date} (${entrustAttendance.length}, ${teacherAttendance.length})`
+      const title = getHeaderString({ events, date, attendance })
       props.navigation.setOptions({ title })
     }
   }

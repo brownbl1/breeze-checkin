@@ -14,7 +14,7 @@ export const missingSettings = (settings: Settings) =>
   !settings.teacherEventId ||
   !settings.date ||
   !settings.printer ||
-  !settings.dayOfWeek
+  typeof settings.dayOfWeek !== 'number'
 
 export const daysOfWeek = [
   'Sunday',

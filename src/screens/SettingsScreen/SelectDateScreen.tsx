@@ -5,7 +5,6 @@ import moment from 'moment'
 import { Button } from 'react-native-elements'
 import { connect } from 'react-redux'
 
-import { DOW } from '../../env'
 import { Dispatch, RootState } from '../../store'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { SettingsStackParamList } from '../../navigation/AppNavigator'
@@ -58,7 +57,7 @@ const ScreenContents: React.FC<Props> = ({
       </View>
       <View style={{ margin: 20 }}>
         <Button
-          disabled={moment(date).day() != DOW}
+          disabled={moment(date).day() != settings.dayOfWeek}
           title={`Select ${moment(date).format('ddd, M/D/YYYY')}`}
           onPress={fetchEventsForDate}
         />

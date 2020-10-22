@@ -1,7 +1,7 @@
 import { createModel } from '@rematch/core'
 import { Printer } from 'expo-print'
 import moment from 'moment'
-import { missingSettings, setSettings, Settings } from '../helpers/getSettings'
+import { setSettings, Settings } from '../helpers/getSettings'
 import { RootModel } from './models'
 
 export const settings = createModel<RootModel>()({
@@ -42,7 +42,8 @@ export const settings = createModel<RootModel>()({
     setAllAsync: async (settings: Settings) => {
       await setSettings(settings)
       dispatch.settings.setAll(settings)
-      if (!missingSettings(settings)) await dispatch.events.selectAsync()
+      if (settings.date && (settings.entrustEventId || settings.teacherEventId))
+        await dispatch.events.selectAsync()
     },
     setPrinterAsync: async (printer: Printer, rootState) => {
       const { settings } = rootState
@@ -60,7 +61,7 @@ export const settings = createModel<RootModel>()({
       await setSettings({ ...settings, date: d })
       dispatch.settings.setDate(d)
 
-      if (settings.entrustEventId && settings.teacherEventId)
+      if (settings.date && settings.entrustEventId && settings.teacherEventId)
         await dispatch.events.selectAsync()
     },
     setEntrustEventIdAsync: async (entrustEventId: string, rootState) => {
@@ -68,16 +69,14 @@ export const settings = createModel<RootModel>()({
       await setSettings({ ...settings, entrustEventId })
       dispatch.settings.setEntrustEventId(entrustEventId)
 
-      if (settings.date && settings.teacherEventId)
-        await dispatch.events.selectAsync()
+      if (settings.date) await dispatch.events.selectAsync()
     },
     setTeacherEventIdAsync: async (teacherEventId: string, rootState) => {
       const { settings } = rootState
       await setSettings({ ...settings, teacherEventId })
       dispatch.settings.setTeacherEventId(teacherEventId)
 
-      if (settings.date && settings.entrustEventId)
-        await dispatch.events.selectAsync()
+      if (settings.date) await dispatch.events.selectAsync()
     },
   }),
 })

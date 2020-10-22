@@ -20,7 +20,7 @@ const mapDispatch = (dispatch: Dispatch) => ({
 })
 
 type SelectDowNavigationProp = {
-  navigation: StackNavigationProp<SettingsStackParamList, 'Select Event'>
+  navigation: StackNavigationProp<SettingsStackParamList, 'Select Day of Week'>
   route: RouteProp<SettingsStackParamList, 'Select Day of Week'>
 }
 

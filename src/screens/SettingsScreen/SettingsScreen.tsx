@@ -11,6 +11,7 @@ import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
 import { daysOfWeek } from '../../helpers/getSettings'
 import { SettingsList } from '../../components/SettingsList'
+import { BreezeEvent } from '../../models/dataModel'
 
 const setPrinter = async () => {
   const selected = Constants.platform.ios
@@ -47,10 +48,19 @@ type Props = SettingsNavigationProp &
   ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>
 
+const getEventString = (event: BreezeEvent) => {
+  if (event) {
+    return `${event.name} - ${moment(event.start_datetime).format('M/DD/YYYY')}`
+  }
+
+  return 'None'
+}
+
 const ScreenContents: React.FC<Props> = ({
   settings,
   onPressPrinter,
   navigation,
+  events,
 }) => {
   const dateString =
     settings.date && moment(settings.date, 'M/D/YYYY').format('ddd, M/D/YYYY')
@@ -78,6 +88,22 @@ const ScreenContents: React.FC<Props> = ({
       showArrow: true,
       onPress: () => {
         navigation.navigate('Select Date')
+      },
+    },
+    {
+      setting: 'Entrust Event',
+      value: getEventString(events.entrustEvent),
+      showArrow: true,
+      onPress: () => {
+        navigation.navigate('Select Event', { eventType: 'Entrust' })
+      },
+    },
+    {
+      setting: 'Teacher Event',
+      value: getEventString(events.teacherEvent),
+      showArrow: true,
+      onPress: () => {
+        navigation.navigate('Select Event', { eventType: 'Entrust Teacher' })
       },
     },
   ]

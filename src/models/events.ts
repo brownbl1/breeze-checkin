@@ -5,7 +5,7 @@ import { Attendance, BreezeEvent, EventPerson } from './dataModel'
 
 export type EventState = {
   entrustEvent: BreezeEvent
-  teacherEventId: string
+  teacherEvent: BreezeEvent
   entrustEventPeople: EventPerson[]
   teacherEventPeople: EventPerson[]
   loading: boolean
@@ -13,10 +13,12 @@ export type EventState = {
 
 let attendanceInterval: number
 
+const noop = new Promise((resolve) => resolve(null))
+
 export const events = createModel<RootModel>()({
   state: {
     entrustEvent: null,
-    teacherEventId: null,
+    teacherEvent: null,
     entrustEventPeople: null,
     teacherEventPeople: null,
     loading: false,
@@ -26,7 +28,7 @@ export const events = createModel<RootModel>()({
       _,
       events: {
         entrustEvent: BreezeEvent
-        teacherEventId: string
+        teacherEvent: BreezeEvent
         entrustEventPeople: EventPerson[]
         teacherEventPeople: EventPerson[]
       },
@@ -37,6 +39,15 @@ export const events = createModel<RootModel>()({
     loading: (state) => ({ ...state, loading: true }),
   },
   effects: (dispatch) => ({
+    getEventsForDate: async (_, { settings }) => {
+      const dateString = moment(settings.date, 'M/D/YYYY').format('YYYY-M-D')
+      const events = (await fetch(
+        `${baseUrl}/api/events?start=${dateString}&end=${dateString}`,
+        options,
+      ).then((res) => res.json())) as BreezeEvent[]
+
+      return events
+    },
     selectAsync: async (_, { settings }) => {
       dispatch.events.loading()
 
@@ -46,56 +57,86 @@ export const events = createModel<RootModel>()({
         options,
       ).then((res) => res.json())) as BreezeEvent[]
 
-      const entrustEventId = events.find(
-        (e) => e.event_id === settings.entrustEventId,
-      ).id
-      const teacherEventId = events.find(
-        (e) => e.event_id === settings.teacherEventId,
-      ).id
+      const promises = []
 
-      const entrustEventPromise = fetch(
-        `${baseUrl}/api/events/list_event?instance_id=${entrustEventId}`,
-        options,
-      ).then((res) => res.json()) as Promise<BreezeEvent>
+      if (settings.entrustEventId) {
+        const entrustEventId = events.find(
+          (e) => e.event_id === settings.entrustEventId,
+        ).id
 
-      const teacherEventPeoplePromise = fetch(
-        `${baseUrl}/api/events/attendance/eligible?instance_id=${teacherEventId}`,
-        options,
-      ).then((res) => res.json()) as Promise<EventPerson[]>
+        const entrustEventPromise = fetch(
+          `${baseUrl}/api/events/list_event?instance_id=${entrustEventId}`,
+          options,
+        ).then((res) => res.json()) as Promise<BreezeEvent>
 
-      const entrustEventPeoplePromise = fetch(
-        `${baseUrl}/api/events/attendance/eligible?instance_id=${entrustEventId}`,
-        options,
-      ).then((res) => res.json()) as Promise<EventPerson[]>
+        promises.push(entrustEventPromise)
+
+        const entrustEventPeoplePromise = fetch(
+          `${baseUrl}/api/events/attendance/eligible?instance_id=${entrustEventId}`,
+          options,
+        ).then((res) => res.json()) as Promise<EventPerson[]>
+
+        promises.push(entrustEventPeoplePromise)
+      } else {
+        promises.push(noop, noop)
+      }
+
+      if (settings.teacherEventId) {
+        const teacherEventId = events.find(
+          (e) => e.event_id === settings.teacherEventId,
+        ).id
+
+        const teacherEventPromise = fetch(
+          `${baseUrl}/api/events/list_event?instance_id=${teacherEventId}`,
+          options,
+        ).then((res) => res.json()) as Promise<BreezeEvent>
+
+        promises.push(teacherEventPromise)
+
+        const teacherEventPeoplePromise = fetch(
+          `${baseUrl}/api/events/attendance/eligible?instance_id=${teacherEventId}`,
+          options,
+        ).then((res) => res.json()) as Promise<EventPerson[]>
+
+        promises.push(teacherEventPeoplePromise)
+      } else {
+        promises.push(noop, noop)
+      }
+
+      type Results = [
+        entrustEvent: BreezeEvent,
+        entrustEventPeople: EventPerson[],
+        teacherEvent: BreezeEvent,
+        teacherEventPeople: EventPerson[],
+      ]
 
       const [
         entrustEvent,
-        teacherEventPeople,
         entrustEventPeople,
-      ] = await Promise.all([
-        entrustEventPromise,
-        teacherEventPeoplePromise,
-        entrustEventPeoplePromise,
-      ])
+        teacherEvent,
+        teacherEventPeople,
+      ] = (await Promise.all(promises)) as Results
 
-      const entrustEventPeopleCleaned = entrustEventPeople
-        .filter(({ first_name }) => first_name)
-        .map(mapPerson)
+      const entrustEventPeopleCleaned =
+        entrustEventPeople &&
+        entrustEventPeople.filter(({ first_name }) => first_name).map(mapPerson)
 
       dispatch.events.select({
         entrustEvent,
-        teacherEventId,
+        teacherEvent,
         entrustEventPeople: entrustEventPeopleCleaned,
         teacherEventPeople,
       })
 
       dispatch.searchList.select(entrustEventPeopleCleaned)
 
-      clearInterval(attendanceInterval)
-      const repeat = () =>
-        fetchAttendance(dispatch, entrustEventId, teacherEventId)
-      attendanceInterval = setInterval(repeat, 1000 * 60 * 1)
-      repeat()
+      if (entrustEvent && teacherEvent) {
+        clearInterval(attendanceInterval)
+        const repeat = () =>
+          fetchAttendance(dispatch, entrustEvent.id, teacherEvent.id)
+        attendanceInterval = setInterval(repeat, 1000 * 60 * 1)
+        repeat()
+      }
     },
   }),
 })
