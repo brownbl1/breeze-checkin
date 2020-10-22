@@ -2,7 +2,6 @@ import { createModel, RematchDispatch } from '@rematch/core'
 import moment from 'moment'
 import { RootModel, baseUrl, options, mapPerson } from './models'
 import { Attendance, BreezeEvent, EventPerson } from './dataModel'
-import { store } from '../store'
 
 export type EventState = {
   entrustEvent: BreezeEvent
