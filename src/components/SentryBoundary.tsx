@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import * as Sentry from 'sentry-expo'
-import { store } from './store'
+import { store } from '../store'
 
 export class SentryBoundary extends React.Component {
   state = { hasError: false, eventId: null as string }

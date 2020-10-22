@@ -1,7 +1,8 @@
 import { createModel } from '@rematch/core'
 import { Printer } from 'expo-print'
 import moment from 'moment'
-import { setSettings, Settings } from '../helpers/getSettings'
+
+import { setSettings, Settings } from '../helpers/settings'
 import { RootModel } from './models'
 
 export const settings = createModel<RootModel>()({

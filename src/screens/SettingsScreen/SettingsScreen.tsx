@@ -9,7 +9,7 @@ import moment from 'moment'
 
 import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
-import { daysOfWeek } from '../../helpers/getSettings'
+import { daysOfWeek } from '../../helpers/settings'
 import { SettingsList } from '../../components/SettingsList'
 import { BreezeEvent } from '../../models/dataModel'
 

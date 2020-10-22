@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import Constants from 'expo-constants'
 
 import { NavigationRoot } from './src/navigation/AppNavigator'
-import { SentryBoundary } from './src/SentryBoundary'
+import { SentryBoundary } from './src/components/SentryBoundary'
 import { store } from './src/store'
 
 Sentry.init({

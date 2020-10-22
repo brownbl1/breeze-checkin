@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getSettings, missingSettings } from '../helpers/getSettings'
+
+import { getSettings, missingSettings } from '../helpers/settings'
 import { store } from '../store'
 
 export enum StartingScreen {
