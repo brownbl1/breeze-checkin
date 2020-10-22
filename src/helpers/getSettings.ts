@@ -3,6 +3,7 @@ import { AsyncStorage } from 'react-native'
 
 export type Settings = {
   printer: Printer
+  numParentTags: number
   date: string
   dayOfWeek: number
   entrustEventId: string
@@ -14,6 +15,7 @@ export const missingSettings = (settings: Settings) =>
   !settings.teacherEventId ||
   !settings.date ||
   !settings.printer ||
+  typeof settings.numParentTags !== 'number' ||
   typeof settings.dayOfWeek !== 'number'
 
 export const daysOfWeek = [

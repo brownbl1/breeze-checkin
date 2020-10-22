@@ -73,6 +73,16 @@ const ScreenContents: React.FC<Props> = ({
       onPress: onPressPrinter,
     },
     {
+      setting: 'Number of Parent Tags',
+      value: settings.numParentTags,
+      showArrow: true,
+      onPress: () => {
+        navigation.navigate('Select Number of Parent Tags', {
+          initialNumber: settings.numParentTags,
+        })
+      },
+    },
+    {
       setting: 'Day of Week',
       value: daysOfWeek[settings.dayOfWeek],
       showArrow: true,

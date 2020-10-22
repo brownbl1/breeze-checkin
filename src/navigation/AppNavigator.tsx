@@ -17,6 +17,7 @@ import {
   SelectDateScreen,
   SelectDowScreen,
   SelectEventScreen,
+  SelectParentTagsScreen,
 } from '../screens'
 
 type NavProps = {
@@ -56,6 +57,7 @@ export type SettingsStackParamList = {
   Settings: undefined
   'Select Date': undefined
   'Select Day of Week': { initialDow: number } | undefined
+  'Select Number of Parent Tags': { initialNumber: number } | undefined
   'Select Event': { eventType: 'Entrust' | 'Entrust Teacher' }
 }
 
@@ -74,6 +76,10 @@ const RootSettingsStack = () => {
       <SettingsStack.Screen
         name="Select Day of Week"
         component={SelectDowScreen}
+      />
+      <SettingsStack.Screen
+        name="Select Number of Parent Tags"
+        component={SelectParentTagsScreen}
       />
     </SettingsStack.Navigator>
   )

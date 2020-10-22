@@ -8,6 +8,7 @@ export const settings = createModel<RootModel>()({
   state: {
     date: null,
     dayOfWeek: null,
+    numParentTags: null,
     entrustEventId: null,
     teacherEventId: null,
     printer: {
@@ -24,6 +25,10 @@ export const settings = createModel<RootModel>()({
     setDow: (state, dayOfWeek: number) => ({
       ...state,
       dayOfWeek,
+    }),
+    setNumParentTags: (state, numParentTags: number) => ({
+      ...state,
+      numParentTags,
     }),
     setDate: (state, date: string) => ({
       ...state,
@@ -54,6 +59,11 @@ export const settings = createModel<RootModel>()({
       const { settings } = rootState
       await setSettings({ ...settings, dayOfWeek })
       dispatch.settings.setDow(dayOfWeek)
+    },
+    setNumParentTagsAsync: async (numParentTags: number, rootState) => {
+      const { settings } = rootState
+      await setSettings({ ...settings, numParentTags })
+      dispatch.settings.setNumParentTags(numParentTags)
     },
     setDateAsync: async (date: Date, rootState) => {
       const { settings } = rootState

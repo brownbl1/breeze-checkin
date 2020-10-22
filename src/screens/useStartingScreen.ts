@@ -19,6 +19,7 @@ export const useStartingScreen = () => {
         const defaultedSettings = {
           ...settings,
           dayOfWeek: settings.dayOfWeek ?? 0,
+          numParentTags: settings.numParentTags ?? 2,
         }
 
         await store.dispatch.settings.setAllAsync(defaultedSettings)
