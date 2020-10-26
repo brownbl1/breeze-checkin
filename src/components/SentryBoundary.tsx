@@ -3,8 +3,15 @@ import { View, Text } from 'react-native'
 import * as Sentry from 'sentry-expo'
 import { store } from '../store'
 
-export class SentryBoundary extends React.Component {
-  state = { hasError: false, eventId: null as string }
+type State = {
+  hasError: boolean
+  eventId: string | null
+  error?: any
+  errorInfo?: any
+}
+
+export class SentryBoundary extends React.Component<{}, State> {
+  state = { hasError: false, eventId: null }
 
   static getDerivedStateFromError() {
     return {

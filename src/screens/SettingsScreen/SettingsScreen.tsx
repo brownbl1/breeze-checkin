@@ -9,12 +9,13 @@ import moment from 'moment'
 
 import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
-import { daysOfWeek } from '../../helpers/settings'
+import { daysOfWeek } from '../../models/settings'
 import { SettingsList } from '../../components/SettingsList'
 import { BreezeEvent } from '../../models/dataModel'
+import { DATE_FORMAT } from '../../env'
 
 const setPrinter = async () => {
-  const selected = Constants.platform.ios
+  const selected = Constants?.platform?.ios
     ? await selectPrinterAsync()
     : { name: "Tom's Printer", url: 'ipps://someaddr' }
 
@@ -31,7 +32,7 @@ const mapDispatch = (dispatch: Dispatch) => ({
     try {
       const printer = await setPrinter()
       if (printer) {
-        dispatch.settings.setPrinterAsync(printer)
+        dispatch.settings.setPrinter(printer)
       }
     } catch (error) {
       const err = error as Error
@@ -48,9 +49,9 @@ type Props = SettingsNavigationProp &
   ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>
 
-const getEventString = (event: BreezeEvent) => {
+const getEventString = (event: BreezeEvent | null) => {
   if (event) {
-    return `${event.name} - ${moment(event.start_datetime).format('M/DD/YYYY')}`
+    return `${event.name} - ${moment(event.start_datetime).format(DATE_FORMAT)}`
   }
 
   return 'None'
@@ -63,12 +64,13 @@ const ScreenContents: React.FC<Props> = ({
   events,
 }) => {
   const dateString =
-    settings.date && moment(settings.date, 'M/D/YYYY').format('ddd, M/D/YYYY')
+    settings.date &&
+    moment(settings.date, DATE_FORMAT).format(`ddd, ${DATE_FORMAT}`)
 
   const data = [
     {
       setting: 'Printer',
-      value: settings.printer.name ?? 'None',
+      value: settings.printer?.name ?? 'None',
       showArrow: false,
       onPress: onPressPrinter,
     },

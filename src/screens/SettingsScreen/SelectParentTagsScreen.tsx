@@ -8,6 +8,7 @@ import { RouteProp } from '@react-navigation/native'
 import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch } from '../../store'
 import { SettingsList } from '../../components/SettingsList'
+import { mapData } from '../../helpers'
 
 type DowOptions = {
   name: string
@@ -16,41 +17,27 @@ type DowOptions = {
 }
 
 const mapDispatch = (dispatch: Dispatch) => ({
-  setNumParentTags: dispatch.settings.setNumParentTagsAsync,
+  setNumParentTags: dispatch.settings.setNumParentTags,
 })
 
 type SelectDowNavigationProp = {
-  navigation: StackNavigationProp<
-    SettingsStackParamList,
-    'Select Number of Parent Tags'
-  >
+  navigation: StackNavigationProp<SettingsStackParamList, 'Select Number of Parent Tags'>
   route: RouteProp<SettingsStackParamList, 'Select Number of Parent Tags'>
 }
 
 type Props = SelectDowNavigationProp & ReturnType<typeof mapDispatch>
 
-const data = [
-  { name: '1', selected: false },
-  { name: '2', selected: false },
-  { name: '3', selected: false },
-]
+const data = [0, 1, 2, 3]
 
 const ScreenContents: React.FC<Props> = ({ route, setNumParentTags }) => {
-  const initialData = data.map(({ name }, i) => {
-    if (route.params.initialNumber === i + 1) return { name, selected: true }
-    return { name, selected: false }
-  })
-
+  const initialData = mapData(data, route.params?.initialNumber)
   const [options, setOptions] = useState<DowOptions[]>(initialData)
 
   const onPress = (index: number) => {
-    const newData = data.map(({ name }, i) => {
-      if (index === i) return { name, selected: true }
-      return { name, selected: false }
-    })
+    const newData = mapData(data, index)
 
     setOptions(newData)
-    setNumParentTags(index + 1)
+    setNumParentTags(index)
   }
 
   return (
@@ -77,8 +64,6 @@ const ScreenContents: React.FC<Props> = ({ route, setNumParentTags }) => {
 
 const ConnectedContents = connect(null, mapDispatch)(ScreenContents)
 
-export const SelectParentTagsScreen: React.FC<SelectDowNavigationProp> = (
-  props,
-) => {
+export const SelectParentTagsScreen: React.FC<SelectDowNavigationProp> = (props) => {
   return <ConnectedContents {...props} />
 }

@@ -75,27 +75,21 @@ const ScreenContents: React.FC<Props> = ({
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <Search value={searchText} onChangeText={onChangeText} />
+    <View style={{ display: 'flex', height: '100%' }}>
+      <View style={{ backgroundColor: 'red', height: 100 }}>
+        <Search value={searchText} onChangeText={onChangeText} />
+      </View>
       <View
         style={{
-          flex: 1,
-          alignItems: 'center',
+          height: '100%',
+          display: 'flex',
           justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'blue',
         }}
       >
         {!filtered.length && (
-          <View style={{ width: '100%', height: '100%' }}>
-            <Image
-              source={logo}
-              style={{
-                resizeMode: 'center',
-                flex: 1,
-                width: undefined,
-                height: undefined,
-              }}
-            />
-          </View>
+          <Image source={logo} style={{ resizeMode: 'center' }} />
         )}
         {!!filtered.length && (
           <PeopleList people={filtered} onPress={onPress} />

@@ -3,8 +3,8 @@ import { Attendance } from './dataModel'
 import { RootModel, baseUrl, options } from './models'
 
 export type AttendanceState = {
-  entrustAttendance: Attendance[]
-  teacherAttendance: Attendance[]
+  entrustAttendance: Attendance[] | null
+  teacherAttendance: Attendance[] | null
 }
 
 export const attendance = createModel<RootModel>()({
@@ -15,24 +15,28 @@ export const attendance = createModel<RootModel>()({
   reducers: {
     set: (_, attendance: AttendanceState) => attendance,
   },
-  effects: (dispatch) => ({
+  effects: () => ({
     checkInChildAsync: async (
       personId: string,
       { events: { entrustEvent } },
     ) => {
-      await fetch(
-        `${baseUrl}/api/events/attendance/add?person_id=${personId}&instance_id=${entrustEvent.id}`,
-        options,
-      )
+      if (entrustEvent && entrustEvent.id) {
+        await fetch(
+          `${baseUrl}/api/events/attendance/add?person_id=${personId}&instance_id=${entrustEvent.id}`,
+          options,
+        )
+      }
     },
     checkInTeacherAsync: async (
       personId: string,
       { events: { teacherEvent } },
     ) => {
-      await fetch(
-        `${baseUrl}/api/events/attendance/add?person_id=${personId}&instance_id=${teacherEvent.id}`,
-        options,
-      )
+      if (teacherEvent && teacherEvent.id) {
+        await fetch(
+          `${baseUrl}/api/events/attendance/add?person_id=${personId}&instance_id=${teacherEvent.id}`,
+          options,
+        )
+      }
     },
   }),
 })

@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
 })
 
 type ItemProps = {
-  onPress: (index: number) => void
+  onPress?: (index: number) => void
   index: number
   itemCount: number
 }
@@ -59,7 +59,7 @@ const RowItem: React.FC<ItemProps> = ({
   children,
 }) => {
   return (
-    <TouchableOpacity onPress={() => onPress(index)}>
+    <TouchableOpacity onPress={() => onPress && onPress(index)}>
       <React.Fragment>
         <View
           style={{

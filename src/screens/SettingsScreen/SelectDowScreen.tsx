@@ -8,6 +8,8 @@ import { RouteProp } from '@react-navigation/native'
 import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch } from '../../store'
 import { SettingsList } from '../../components/SettingsList'
+import { daysOfWeek } from '../../models/settings'
+import { mapData } from '../../helpers'
 
 type DowOptions = {
   name: string
@@ -16,7 +18,7 @@ type DowOptions = {
 }
 
 const mapDispatch = (dispatch: Dispatch) => ({
-  setDowAsync: dispatch.settings.setDowAsync,
+  setDow: dispatch.settings.setDow,
 })
 
 type SelectDowNavigationProp = {
@@ -26,32 +28,14 @@ type SelectDowNavigationProp = {
 
 type Props = SelectDowNavigationProp & ReturnType<typeof mapDispatch>
 
-const data = [
-  { name: 'Sunday', selected: false },
-  { name: 'Monday', selected: false },
-  { name: 'Tuesday', selected: false },
-  { name: 'Wednesday', selected: false },
-  { name: 'Thursday', selected: false },
-  { name: 'Friday', selected: false },
-  { name: 'Saturday', selected: false },
-]
-
-const ScreenContents: React.FC<Props> = ({ route, setDowAsync }) => {
-  const initialData = data.map(({ name }, i) => {
-    if (route.params.initialDow === i) return { name, selected: true }
-    return { name, selected: false }
-  })
-
+const ScreenContents: React.FC<Props> = ({ route, setDow }) => {
+  const initialData = mapData(daysOfWeek, route.params?.initialDow)
   const [options, setOptions] = useState<DowOptions[]>(initialData)
 
   const onPress = (index: number) => {
-    const newData = data.map(({ name }, i) => {
-      if (index === i) return { name, selected: true }
-      return { name, selected: false }
-    })
-
+    const newData = mapData(daysOfWeek, index)
     setOptions(newData)
-    setDowAsync(index)
+    setDow(index)
   }
 
   return (

@@ -2,13 +2,14 @@ import { createModel } from '@rematch/core'
 import { FamilyPerson, Person } from './dataModel'
 import { RootModel, baseUrl, options, mapPerson } from './models'
 
-export type RelationshipsState = FamilyPerson[]
+export type RelationshipsState = FamilyPerson[] | null
 
 export const selectedChildRelationships = createModel<RootModel>()({
   state: null as RelationshipsState,
   reducers: {
     set: (_, relationships: RelationshipsState) => relationships,
     toggleChecked: (state, id: string) =>
+      state &&
       state.map((person) => {
         const { details, ...restPerson } = person
         if (details.id !== id) {

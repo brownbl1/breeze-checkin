@@ -8,36 +8,36 @@ import { connect } from 'react-redux'
 import { Dispatch, RootState } from '../../store'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { SettingsStackParamList } from '../../navigation/AppNavigator'
+import { DATE_FORMAT } from '../../env'
 
 const mapState = ({ settings }: RootState) => ({ settings })
 
 const mapDispatch = (dispatch: Dispatch) => ({
-  setDateAsync: dispatch.settings.setDateAsync,
+  saveDate: dispatch.settings.setDate,
 })
 
 type SelectDateNavigationProp = {
   navigation: StackNavigationProp<SettingsStackParamList, 'Select Date'>
 }
 
-type Props = {
-  goBack: () => void
-} & SelectDateNavigationProp &
+type Props = SelectDateNavigationProp &
   ReturnType<typeof mapDispatch> &
   ReturnType<typeof mapState>
 
 const ScreenContents: React.FC<Props> = ({
+  navigation,
   settings,
-  setDateAsync,
-  goBack,
+  saveDate,
 }) => {
   const d = settings.date
-    ? moment(settings.date, 'M/D/YYYY').toDate()
+    ? moment(settings.date, DATE_FORMAT).toDate()
     : new Date()
   const [date, setDate] = useState(d)
 
   const fetchEventsForDate = useCallback(async () => {
-    await setDateAsync(date)
-    goBack()
+    saveDate(moment(date).format(DATE_FORMAT))
+    // TODO: initialize event info if possible
+    navigation.goBack()
   }, [date])
 
   return (
@@ -52,13 +52,13 @@ const ScreenContents: React.FC<Props> = ({
         <DatePicker
           mode="date"
           value={date}
-          onChange={(e, date) => setDate(date)}
+          onChange={(e, date) => setDate(date as Date)}
         />
       </View>
       <View style={{ margin: 20 }}>
         <Button
           disabled={moment(date).day() != settings.dayOfWeek}
-          title={`Select ${moment(date).format('ddd, M/D/YYYY')}`}
+          title={`Select ${moment(date).format(`ddd, ${DATE_FORMAT}`)}`}
           onPress={fetchEventsForDate}
         />
       </View>
@@ -69,6 +69,5 @@ const ScreenContents: React.FC<Props> = ({
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
 export const SelectDateScreen: React.FC<SelectDateNavigationProp> = (props) => {
-  const goBack = () => props.navigation.goBack()
-  return <ConnectedContents {...props} goBack={goBack} />
+  return <ConnectedContents {...props} />
 }

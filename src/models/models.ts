@@ -1,8 +1,5 @@
 import { Models } from '@rematch/core'
-import Constants from 'expo-constants'
 
-import { SUB } from '../env'
-import { selectedChild } from './selectedChild'
 import { printDetails } from './printDetails'
 import { selectedChildRelationships } from './selectedChildRelationships'
 import { events } from './events'
@@ -15,7 +12,6 @@ import { settings } from './settings'
 const placeholder = require('../assets/gray.png')
 
 export interface RootModel extends Models<RootModel> {
-  selectedChild: typeof selectedChild
   printDetails: typeof printDetails
   selectedChildRelationships: typeof selectedChildRelationships
   events: typeof events
@@ -26,7 +22,6 @@ export interface RootModel extends Models<RootModel> {
 }
 
 export const models: RootModel = {
-  selectedChild,
   printDetails,
   selectedChildRelationships,
   events,
@@ -34,11 +29,6 @@ export const models: RootModel = {
   settings,
   searchText,
   searchList,
-}
-
-export const baseUrl = `https://${SUB}.breezechms.com`
-export const options = {
-  headers: { 'Api-key': Constants.manifest.extra.API_KEY },
 }
 
 type DetailsPerson = {

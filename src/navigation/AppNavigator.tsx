@@ -36,7 +36,7 @@ const leftNavOpts = ({ navigation }: NavProps) => ({
 
 export type HomeStackParamList = {
   Home: undefined
-  Family: undefined
+  Family: { childName: string }
 }
 
 const HomeStack = createStackNavigator<HomeStackParamList>()

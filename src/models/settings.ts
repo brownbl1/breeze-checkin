@@ -1,21 +1,57 @@
 import { createModel } from '@rematch/core'
 import { Printer } from 'expo-print'
 import moment from 'moment'
+import { DATE_FORMAT } from '../env'
 
-import { setSettings, Settings } from '../helpers/settings'
 import { RootModel } from './models'
+
+export type Settings = {
+  numParentTags: number
+  dayOfWeek: number
+  date: string
+  entrustEventId: string | null
+  teacherEventId: string | null
+  printer: Printer | null
+}
+
+export const missingSettings = (settings: Settings) =>
+  !settings.entrustEventId ||
+  !settings.teacherEventId ||
+  !settings.date ||
+  !settings.printer ||
+  typeof settings.numParentTags !== 'number' ||
+  typeof settings.dayOfWeek !== 'number'
+
+export const daysOfWeek = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+]
+
+export const getNextDate = (dayINeed: number, currentDate?: string) => {
+  if (currentDate && moment(currentDate, DATE_FORMAT).day() === dayINeed) {
+    return currentDate
+  }
+
+  const today = moment().day()
+  const date =
+    today <= dayINeed ? moment().day(dayINeed) : moment().add(1, 'weeks').day(dayINeed)
+
+  return date.format(DATE_FORMAT)
+}
 
 export const settings = createModel<RootModel>()({
   state: {
-    date: null,
-    dayOfWeek: null,
-    numParentTags: null,
+    date: getNextDate(0),
+    dayOfWeek: 0,
+    numParentTags: 2,
     entrustEventId: null,
     teacherEventId: null,
-    printer: {
-      name: null,
-      url: null,
-    },
+    printer: null,
   } as Settings,
   reducers: {
     setAll: (_, settings: Settings) => settings,
@@ -25,10 +61,10 @@ export const settings = createModel<RootModel>()({
     }),
     setDow: (state, dayOfWeek: number) => ({
       ...state,
-      date: null,
+      dayOfWeek,
+      date: getNextDate(dayOfWeek, state.date),
       entrustEventId: null,
       teacherEventId: null,
-      dayOfWeek,
     }),
     setNumParentTags: (state, numParentTags: number) => ({
       ...state,
@@ -47,61 +83,4 @@ export const settings = createModel<RootModel>()({
       teacherEventId,
     }),
   },
-  effects: (dispatch) => ({
-    setAllAsync: async (settings: Settings) => {
-      await setSettings(settings)
-      dispatch.settings.setAll(settings)
-      if (settings.date && (settings.entrustEventId || settings.teacherEventId))
-        await dispatch.events.selectAsync()
-    },
-    setPrinterAsync: async (printer: Printer, rootState) => {
-      const { settings } = rootState
-      await setSettings({ ...settings, printer })
-      dispatch.settings.setPrinter(printer)
-    },
-    setDowAsync: async (dayOfWeek: number, rootState) => {
-      const { settings } = rootState
-      await setSettings({
-        ...settings,
-        date: null,
-        entrustEventId: null,
-        teacherEventId: null,
-        dayOfWeek,
-      })
-      dispatch.settings.setDow(dayOfWeek)
-      dispatch.events.clear()
-    },
-    setNumParentTagsAsync: async (numParentTags: number, rootState) => {
-      const { settings } = rootState
-      await setSettings({ ...settings, numParentTags })
-      dispatch.settings.setNumParentTags(numParentTags)
-    },
-    setDateAsync: async (date: Date, rootState) => {
-      const { settings } = rootState
-      const d = moment(date).format('M/D/YYYY')
-      await setSettings({
-        ...settings,
-        date: d,
-      })
-      dispatch.settings.setDate(d)
-      dispatch.events.clear()
-
-      if (settings.date && settings.entrustEventId && settings.teacherEventId)
-        await dispatch.events.selectAsync()
-    },
-    setEntrustEventIdAsync: async (entrustEventId: string, rootState) => {
-      const { settings } = rootState
-      await setSettings({ ...settings, entrustEventId })
-      dispatch.settings.setEntrustEventId(entrustEventId)
-
-      if (settings.date) await dispatch.events.selectAsync()
-    },
-    setTeacherEventIdAsync: async (teacherEventId: string, rootState) => {
-      const { settings } = rootState
-      await setSettings({ ...settings, teacherEventId })
-      dispatch.settings.setTeacherEventId(teacherEventId)
-
-      if (settings.date) await dispatch.events.selectAsync()
-    },
-  }),
 })

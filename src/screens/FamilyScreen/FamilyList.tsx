@@ -46,8 +46,6 @@ const FamilyRowItem: React.FC<RowItemProps> = ({
           <Image
             style={{
               flex: 1,
-              height: null,
-              width: null,
               resizeMode: 'contain',
             }}
             defaultSource={placeholder}

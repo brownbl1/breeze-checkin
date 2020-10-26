@@ -9,18 +9,17 @@ import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
 import { SettingsList } from '../../components/SettingsList'
 import { BreezeEvent } from '../../models/dataModel'
+import { getEventsForDate } from '../../api'
 
 type Event = BreezeEvent & {
   selected?: boolean
   onPress?: (index: number) => void
 }
 
-const mapState = ({ settings }: RootState) => ({ date: settings.date })
-
+const mapState = (state: RootState) => ({ date: state.settings.date })
 const mapDispatch = (dispatch: Dispatch) => ({
-  getEvents: dispatch.events.getEventsForDate,
-  setEntrustEventId: dispatch.settings.setEntrustEventIdAsync,
-  setTeacherEventId: dispatch.settings.setTeacherEventIdAsync,
+  setEntrustEventId: dispatch.settings.setEntrustEventId,
+  setTeacherEventId: dispatch.settings.setTeacherEventId,
 })
 
 type SelectEventNavigationProp = {
@@ -34,15 +33,15 @@ type Props = SelectEventNavigationProp &
 
 const ScreenContents: React.FC<Props> = ({
   route,
-  getEvents,
+  date,
   setEntrustEventId,
   setTeacherEventId,
 }) => {
   const [events, setEvents] = useState<Event[]>([])
 
   useEffect(() => {
-    getEvents().then((ev) => setEvents(ev))
-  }, [])
+    getEventsForDate(date).then(setEvents)
+  }, [date])
 
   const onPress = (index: number) => {
     const ev = events.map((e, i) => {
@@ -55,9 +54,7 @@ const ScreenContents: React.FC<Props> = ({
     setEvents(ev)
 
     const fn =
-      route.params.eventType === 'Entrust'
-        ? setEntrustEventId
-        : setTeacherEventId
+      route.params.eventType === 'Entrust' ? setEntrustEventId : setTeacherEventId
     fn(events[index].event_id)
   }
 
@@ -69,24 +66,25 @@ const ScreenContents: React.FC<Props> = ({
         height: '100%',
       }}
     >
-      <SettingsList
-        data={events}
-        onPress={onPress}
-        renderItem={({ item }) => (
-          <React.Fragment>
-            <Text>{item.name}</Text>
-            {item.selected && <Icon name="done" color="rgb(32, 137, 220)" />}
-          </React.Fragment>
-        )}
-      />
+      {!date && <Text>Please select a date first</Text>}
+      {date && (
+        <SettingsList
+          data={events}
+          onPress={onPress}
+          renderItem={({ item }) => (
+            <React.Fragment>
+              <Text>{item.name}</Text>
+              {item.selected && <Icon name="done" color="rgb(32, 137, 220)" />}
+            </React.Fragment>
+          )}
+        />
+      )}
     </View>
   )
 }
 
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
-export const SelectEventScreen: React.FC<SelectEventNavigationProp> = (
-  props,
-) => {
+export const SelectEventScreen: React.FC<SelectEventNavigationProp> = (props) => {
   return <ConnectedContents {...props} />
 }

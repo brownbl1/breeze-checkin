@@ -16,6 +16,7 @@ import { RelationshipsState } from '../../models/selectedChildRelationships'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { HomeStackParamList } from '../../navigation/AppNavigator'
 import { Printer } from 'expo-print'
+import { RouteProp } from '@react-navigation/native'
 
 export type FamilyRowData = {
   thumb_path: string
@@ -31,14 +32,12 @@ export type FamilyRowData = {
 }
 
 const mapState = ({
-  selectedChild,
   selectedChildRelationships,
   attendance,
   printDetails,
   settings: { printer },
   events: { teacherEventPeople },
 }: RootState) => ({
-  selectedChild,
   selectedChildRelationships,
   attendance,
   printDetails,
@@ -55,17 +54,15 @@ const mapDispatch = (dispatch: Dispatch) => ({
 
 type FamilyNavigationProp = {
   navigation: StackNavigationProp<HomeStackParamList, 'Family'>
+  route: RouteProp<HomeStackParamList, 'Family'>
 }
 
-type Props = {
-  goHome: () => void
-  setTitle: (name: string) => void
-} & FamilyNavigationProp &
+type Props = FamilyNavigationProp &
   ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>
 
 const hasPin = ({ printDetails }: { printDetails: PrintDetailsState }) =>
-  hasDetails({ printDetails }) && printDetails.head.details[PIN_KEY]
+  printDetails && printDetails.head && printDetails.head.details[PIN_KEY]
 
 const requirePin = ({
   printDetails,
@@ -189,22 +186,18 @@ const enablePrint = ({
 }
 
 const ScreenContents: React.FC<Props> = ({
+  navigation,
   selectedChildRelationships,
   attendance: { entrustAttendance, teacherAttendance },
   printDetails,
   toggleChecked,
   teacherEventPeople,
   setText,
-  goHome,
   checkIn,
   checkInTeacher,
-  selectedChild: { name },
-  setTitle,
   printer,
 }) => {
-  useEffect(() => {
-    setTitle(name)
-  }, [name])
+  const goHome = () => navigation.goBack()
 
   const isTeacher = (person_id: string) =>
     teacherEventPeople.find(({ id }) => id === person_id)
@@ -280,8 +273,6 @@ const ScreenContents: React.FC<Props> = ({
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
 export const FamilyScreen: React.FC<FamilyNavigationProp> = (props) => {
-  const goHome = () => props.navigation.goBack()
-  const setTitle = (name: string) =>
-    props.navigation.setOptions({ title: name })
-  return <ConnectedContents {...props} goHome={goHome} setTitle={setTitle} />
+  props.navigation.setOptions({ title: props.route.params.childName })
+  return <ConnectedContents {...props} />
 }

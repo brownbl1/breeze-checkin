@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { DATE_FORMAT } from '../../env'
 
 type ParentLabelArgs = {
   selectedChildrenNames: string[]
@@ -9,7 +10,7 @@ export const getParentLabelHtml = ({
   selectedChildrenNames,
   parentNames,
 }: ParentLabelArgs) => {
-  const dateTime = moment().format('M/D/YYYY h:mm A')
+  const dateTime = moment().format(`${DATE_FORMAT} h:mm A`)
   const childrenHtml = selectedChildrenNames
     .map((name) => `<div>${name}</div>`)
     .join('')
@@ -118,7 +119,7 @@ body {
 
 <div id="container">
   <div id="top">
-    <div>${moment().format('M/D/YYYY')}</div>
+    <div>${moment().format(DATE_FORMAT)}</div>
     <div>${entrustId || ''}</div>
   </div>
   <div id="middle">
