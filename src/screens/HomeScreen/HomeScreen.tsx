@@ -1,34 +1,29 @@
 import React, { useEffect } from 'react'
-import { View, Image } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import { connect } from 'react-redux'
+import { StackNavigationProp } from '@react-navigation/stack'
+
 import { Search } from './SearchBar'
 import PeopleList from './PeopleList'
 import { Dispatch, RootState } from '../../store'
 import { Person } from '../../models/dataModel'
 import { AttendanceState } from '../../models/attendance'
-import { StackNavigationProp } from '@react-navigation/stack'
 import { HomeStackParamList } from '../../navigation/AppNavigator'
 import { EventState } from '../../models/events'
 
 const logo = require('../../assets/logo.png')
 
-const mapState = ({
-  events,
-  searchText,
-  searchList,
-  attendance,
-  settings: { date },
-}: RootState) => ({
-  events,
-  searchText,
-  attendance,
-  date,
-  searchList,
+const mapState = (state: RootState) => ({
+  events: state.events,
+  searchText: state.searchText,
+  attendance: state.attendance,
+  date: state.settings.date,
+  searchList: state.searchList,
 })
 
 const mapDispatch = (dispatch: Dispatch) => ({
   onChangeText: dispatch.searchText.set,
-  onSelectPerson: dispatch.selectedChild.selectAsync,
+  // onSelectPerson: dispatch.selectedChild.selectAsync,
 })
 
 type UpdateHeader = {
@@ -41,67 +36,60 @@ type HomeNavigationProp = {
   navigation: StackNavigationProp<HomeStackParamList, 'Home'>
 }
 
-type Props = {
-  goToFamily: () => void
-  updateHeader: (args: UpdateHeader) => void
-} & HomeNavigationProp &
+type Props = HomeNavigationProp &
   ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>
 
 const ScreenContents: React.FC<Props> = ({
+  navigation,
   searchText,
   onChangeText,
   searchList: { filtered },
-  onSelectPerson,
+  // onSelectPerson,
   events,
   attendance,
-  goToFamily,
-  updateHeader,
   date,
 }) => {
   useEffect(() => {
-    updateHeader({ events, date, attendance })
+    if (events.entrustEvent) {
+      const title = getHeaderString({ events, date, attendance })
+      navigation.setOptions({ title })
+    }
   }, [
     events.entrustEvent,
-    events.teacherEvent,
     date,
     attendance.entrustAttendance,
     attendance.teacherAttendance,
   ])
 
   const onPress = async (item: Person) => {
-    await onSelectPerson(item)
-    goToFamily()
+    // await onSelectPerson(item)
+    // props.navigation.navigate('Family')
   }
 
+  const ImageView = () => (
+    <View style={{ flex: 1 }}>
+      <Image
+        style={{ flex: 1, height: undefined, width: undefined }}
+        source={logo}
+        resizeMode="contain"
+      />
+    </View>
+  )
+
   return (
-    <View style={{ display: 'flex', height: '100%' }}>
-      <View style={{ backgroundColor: 'red', height: 100 }}>
-        <Search value={searchText} onChangeText={onChangeText} />
-      </View>
-      <View
-        style={{
-          height: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'blue',
-        }}
-      >
-        {!filtered.length && (
-          <Image source={logo} style={{ resizeMode: 'center' }} />
-        )}
-        {!!filtered.length && (
-          <PeopleList people={filtered} onPress={onPress} />
-        )}
-      </View>
+    <View style={{ height: '100%' }}>
+      <Search value={searchText} onChangeText={onChangeText} />
+      {!filtered.length && <ImageView />}
+      {!!filtered.length && <PeopleList people={filtered} onPress={onPress} />}
     </View>
   )
 }
 
 const getHeaderString = ({ events, attendance, date }: UpdateHeader) => {
   const { entrustAttendance, teacherAttendance } = attendance
-  const title = `${events.entrustEvent.name} - ${date}`
+
+  const title = `${events.entrustEvent?.name} - ${date}`
   if (entrustAttendance && teacherAttendance) {
     return `${title} (${entrustAttendance.length}, ${teacherAttendance.length})`
   }
@@ -112,20 +100,5 @@ const getHeaderString = ({ events, attendance, date }: UpdateHeader) => {
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
 export const HomeScreen: React.FC<HomeNavigationProp> = (props) => {
-  const goToFamily = () => props.navigation.navigate('Family')
-
-  const updateHeader = ({ events, date, attendance }: UpdateHeader) => {
-    if (events.entrustEvent) {
-      const title = getHeaderString({ events, date, attendance })
-      props.navigation.setOptions({ title })
-    }
-  }
-
-  return (
-    <ConnectedContents
-      {...props}
-      goToFamily={goToFamily}
-      updateHeader={updateHeader}
-    />
-  )
+  return <ConnectedContents {...props} />
 }

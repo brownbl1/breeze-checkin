@@ -6,12 +6,12 @@ type Props = {
   onChangeText: (text: string) => void
 }
 
-export const Search: React.FC<Props> = props => {
-  const searchRef = useRef(null)
+export const Search: React.FC<Props> = (props) => {
+  const searchRef = useRef<SearchBar>(null)
 
   const clearOnPress = () => {
-    searchRef.current.searchbar.clear()
-    searchRef.current.searchbar.focus()
+    searchRef.current?.clear()
+    searchRef.current?.focus()
   }
 
   return (
