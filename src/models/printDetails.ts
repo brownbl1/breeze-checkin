@@ -1,16 +1,12 @@
 import { createModel } from '@rematch/core'
-import { Person, FamilyPerson } from './dataModel'
-import { RootModel, baseUrl, options } from './models'
+import { FamilyPerson, Person } from './dataModel'
+import { baseUrl, options, RootModel } from './models'
 
-const getSpouse = (
-  headId: string,
-  spouse?: FamilyPerson,
-): Promise<Person | null> => {
+const getSpouse = (headId: string, spouse?: FamilyPerson): Promise<Person | null> => {
   if (spouse && spouse.person_id !== headId) {
-    return fetch(
-      `${baseUrl}/api/people/${spouse.person_id}`,
-      options,
-    ).then((res) => res.json()) as Promise<Person>
+    return fetch(`${baseUrl}/api/people/${spouse.person_id}`, options).then((res) =>
+      res.json(),
+    ) as Promise<Person>
   }
 
   return Promise.resolve(null)
@@ -40,10 +36,9 @@ export const printDetails = createModel<RootModel>()({
 
       const headId = person.person_id
 
-      const headPromise = fetch(
-        `${baseUrl}/api/people/${headId}`,
-        options,
-      ).then((res) => res.json()) as Promise<Person>
+      const headPromise = fetch(`${baseUrl}/api/people/${headId}`, options).then((res) =>
+        res.json(),
+      ) as Promise<Person>
 
       const spousePromise = getSpouse(headId, spouse)
 

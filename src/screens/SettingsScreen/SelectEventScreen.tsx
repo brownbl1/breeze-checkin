@@ -1,15 +1,14 @@
+import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
-import { View, Text } from 'react-native'
-import { connect } from 'react-redux'
+import { Text, View } from 'react-native'
 import { Icon } from 'react-native-elements'
-import { RouteProp } from '@react-navigation/native'
-
-import { SettingsStackParamList } from '../../navigation/AppNavigator'
-import { Dispatch, RootState } from '../../store'
+import { connect } from 'react-redux'
+import { getEventsForDate } from '../../api'
 import { SettingsList } from '../../components/SettingsList'
 import { BreezeEvent } from '../../models/dataModel'
-import { getEventsForDate } from '../../api'
+import { SettingsStackParamList } from '../../navigation/AppNavigator'
+import { Dispatch, RootState } from '../../store'
 
 type Event = BreezeEvent & {
   selected?: boolean

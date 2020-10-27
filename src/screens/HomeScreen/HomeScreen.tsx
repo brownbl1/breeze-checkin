@@ -1,15 +1,14 @@
-import React, { useEffect } from 'react'
-import { View, Text, Image } from 'react-native'
-import { connect } from 'react-redux'
 import { StackNavigationProp } from '@react-navigation/stack'
-
-import { Search } from './SearchBar'
-import PeopleList from './PeopleList'
-import { Dispatch, RootState } from '../../store'
-import { Person } from '../../models/dataModel'
+import React, { useEffect } from 'react'
+import { Image, View } from 'react-native'
+import { connect } from 'react-redux'
 import { AttendanceState } from '../../models/attendance'
-import { HomeStackParamList } from '../../navigation/AppNavigator'
+import { Person } from '../../models/dataModel'
 import { EventState } from '../../models/events'
+import { HomeStackParamList } from '../../navigation/AppNavigator'
+import { Dispatch, RootState } from '../../store'
+import PeopleList from './PeopleList'
+import { Search } from './SearchBar'
 
 const logo = require('../../assets/logo.png')
 

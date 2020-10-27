@@ -3,10 +3,8 @@ import moment from 'moment'
 import { DATE_FORMAT, SUB } from '../env'
 import { BreezeEvent, EventPerson } from '../models/dataModel'
 
-export const baseUrl = `https://${SUB}.breezechms.com`
-export const options = {
-  headers: { 'Api-key': Constants.manifest.extra.API_KEY },
-}
+const baseUrl = `https://${SUB}.breezechms.com`
+const options = { headers: { 'Api-key': Constants.manifest.extra.API_KEY } }
 
 type Cache = {
   [key: string]: any

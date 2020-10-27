@@ -1,14 +1,6 @@
 import React from 'react'
-import {
-  Keyboard,
-  Text,
-  View,
-  FlatList,
-  Image,
-  TouchableOpacity,
-} from 'react-native'
+import { FlatList, Image, Keyboard, Text, TouchableOpacity, View } from 'react-native'
 import { Icon } from 'react-native-elements'
-
 import { CommonPersonDetails } from '../../models/dataModel'
 
 const placeholder = require('../../assets/gray.png')

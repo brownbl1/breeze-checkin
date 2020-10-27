@@ -1,7 +1,6 @@
 import React from 'react'
-import { FlatList, TouchableOpacity } from 'react-native'
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
 import { Icon } from 'react-native-elements'
-import { View, Text, Image } from 'react-native'
 import { FamilyRowData } from './FamilyScreen'
 
 const placeholder = require('../../assets/gray.png')
@@ -18,12 +17,7 @@ type RowItemProps = {
   itemCount: number
 }
 
-const FamilyRowItem: React.FC<RowItemProps> = ({
-  item,
-  onPress,
-  index,
-  itemCount,
-}) => (
+const FamilyRowItem: React.FC<RowItemProps> = ({ item, onPress, index, itemCount }) => (
   <TouchableOpacity onPress={() => onPress(item)}>
     <View
       style={{
@@ -55,9 +49,7 @@ const FamilyRowItem: React.FC<RowItemProps> = ({
         </View>
         <Text>{item.name}</Text>
       </View>
-      {item.checked && (
-        <Icon name="checkbox-marked" type="material-community" />
-      )}
+      {item.checked && <Icon name="checkbox-marked" type="material-community" />}
       {item.attendance && !item.checked && (
         <Icon name="checkbox-intermediate" type="material-community" />
       )}

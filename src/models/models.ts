@@ -1,12 +1,11 @@
 import { Models } from '@rematch/core'
-
-import { printDetails } from './printDetails'
-import { selectedChildRelationships } from './selectedChildRelationships'
-import { events } from './events'
-import { searchList } from './searchList'
 import { attendance } from './attendance'
-import { searchText } from './searchText'
 import { EventPerson } from './dataModel'
+import { events } from './events'
+import { printDetails } from './printDetails'
+import { searchList } from './searchList'
+import { searchText } from './searchText'
+import { selectedChildRelationships } from './selectedChildRelationships'
 import { settings } from './settings'
 
 const placeholder = require('../assets/gray.png')

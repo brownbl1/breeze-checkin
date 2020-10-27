@@ -1,14 +1,13 @@
-import React, { useState, useCallback } from 'react'
-import { View } from 'react-native'
 import DatePicker from '@react-native-community/datetimepicker'
+import { StackNavigationProp } from '@react-navigation/stack'
 import moment from 'moment'
+import React, { useCallback, useState } from 'react'
+import { View } from 'react-native'
 import { Button } from 'react-native-elements'
 import { connect } from 'react-redux'
-
-import { Dispatch, RootState } from '../../store'
-import { StackNavigationProp } from '@react-navigation/stack'
-import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { DATE_FORMAT } from '../../env'
+import { SettingsStackParamList } from '../../navigation/AppNavigator'
+import { Dispatch, RootState } from '../../store'
 
 const mapState = ({ settings }: RootState) => ({ settings })
 
@@ -24,14 +23,8 @@ type Props = SelectDateNavigationProp &
   ReturnType<typeof mapDispatch> &
   ReturnType<typeof mapState>
 
-const ScreenContents: React.FC<Props> = ({
-  navigation,
-  settings,
-  saveDate,
-}) => {
-  const d = settings.date
-    ? moment(settings.date, DATE_FORMAT).toDate()
-    : new Date()
+const ScreenContents: React.FC<Props> = ({ navigation, settings, saveDate }) => {
+  const d = settings.date ? moment(settings.date, DATE_FORMAT).toDate() : new Date()
   const [date, setDate] = useState(d)
 
   const fetchEventsForDate = useCallback(async () => {

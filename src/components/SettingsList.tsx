@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
   FlatList,
   ListRenderItem,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from 'react-native'
 
 function Spacer() {
@@ -52,12 +52,7 @@ type ItemProps = {
   itemCount: number
 }
 
-const RowItem: React.FC<ItemProps> = ({
-  onPress,
-  index,
-  itemCount,
-  children,
-}) => {
+const RowItem: React.FC<ItemProps> = ({ onPress, index, itemCount, children }) => {
   return (
     <TouchableOpacity onPress={() => onPress && onPress(index)}>
       <React.Fragment>

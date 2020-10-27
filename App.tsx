@@ -1,14 +1,13 @@
-import React from 'react'
-import * as Sentry from 'sentry-expo'
-import { Provider } from 'react-redux'
-import Constants from 'expo-constants'
 import { getPersistor } from '@rematch/persist'
-import { PersistGate } from 'redux-persist/lib/integration/react'
-
-import { NavigationRoot } from './src/navigation/AppNavigator'
-import { SentryBoundary } from './src/components/SentryBoundary'
-import { store } from './src/store'
 import { AppLoading } from 'expo'
+import Constants from 'expo-constants'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/lib/integration/react'
+import * as Sentry from 'sentry-expo'
+import { SentryBoundary } from './src/components/SentryBoundary'
+import { NavigationRoot } from './src/navigation/AppNavigator'
+import { store } from './src/store'
 
 Sentry.init({
   dsn: Constants.manifest.extra.SENTRY_DSN,

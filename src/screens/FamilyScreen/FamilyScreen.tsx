@@ -1,22 +1,20 @@
-import React, { useEffect } from 'react'
-import { ImageSourcePropType, View } from 'react-native'
-import { connect } from 'react-redux'
-import { Alert } from 'react-native'
-import { Button } from 'react-native-elements'
+import { RouteProp } from '@react-navigation/native'
+import { StackNavigationProp } from '@react-navigation/stack'
 import { Action } from '@rematch/core'
+import { Printer } from 'expo-print'
+import React from 'react'
+import { Alert, ImageSourcePropType, View } from 'react-native'
+import { Button } from 'react-native-elements'
 import Toast from 'react-native-root-toast'
-
-import { FamilyList } from './FamilyList'
-import { printLabels } from './printLabels'
+import { connect } from 'react-redux'
 import { PIN_KEY } from '../../env'
-import { Dispatch, RootState } from '../../store'
 import { Attendance, CommonPersonDetails } from '../../models/dataModel'
 import { PrintDetailsState } from '../../models/printDetails'
 import { RelationshipsState } from '../../models/selectedChildRelationships'
-import { StackNavigationProp } from '@react-navigation/stack'
 import { HomeStackParamList } from '../../navigation/AppNavigator'
-import { Printer } from 'expo-print'
-import { RouteProp } from '@react-navigation/native'
+import { Dispatch, RootState } from '../../store'
+import { FamilyList } from './FamilyList'
+import { printLabels } from './printLabels'
 
 export type FamilyRowData = {
   thumb_path: string
@@ -73,8 +71,7 @@ const requirePin = ({
   selectedChildRelationships: RelationshipsState
   isChild: IsChild
 }) =>
-  (hasPin({ printDetails }) &&
-    childSelected({ selectedChildRelationships, isChild })) ||
+  (hasPin({ printDetails }) && childSelected({ selectedChildRelationships, isChild })) ||
   childSelected({ selectedChildRelationships, isChild })
 
 type PrintProps = {
@@ -149,19 +146,11 @@ const childSelected = ({
 }) => {
   return (
     selectedChildRelationships &&
-    selectedChildRelationships
-      .filter(({ details }) => details.checked)
-      .some(isChild)
+    selectedChildRelationships.filter(({ details }) => details.checked).some(isChild)
   )
 }
 
-type IsChild = ({
-  role_id,
-  person_id,
-}: {
-  role_id: string
-  person_id: string
-}) => boolean
+type IsChild = ({ role_id, person_id }: { role_id: string; person_id: string }) => boolean
 
 type PrintData = {
   data: FamilyRowData[]
@@ -179,8 +168,7 @@ const enablePrint = ({
   const personSelected = data && data.filter(({ checked }) => checked).length
 
   const disableDueToChildSelectedAndMissingPin =
-    childSelected({ selectedChildRelationships, isChild }) &&
-    !hasPin({ printDetails })
+    childSelected({ selectedChildRelationships, isChild }) && !hasPin({ printDetails })
 
   return personSelected && !disableDueToChildSelectedAndMissingPin
 }
@@ -201,13 +189,8 @@ const ScreenContents: React.FC<Props> = ({
 
   const isTeacher = (person_id: string) =>
     teacherEventPeople.find(({ id }) => id === person_id)
-  const isChild = ({
-    role_id,
-    person_id,
-  }: {
-    role_id: string
-    person_id: string
-  }) => role_id === '2' && !isTeacher(person_id)
+  const isChild = ({ role_id, person_id }: { role_id: string; person_id: string }) =>
+    role_id === '2' && !isTeacher(person_id)
 
   const attendance = [...entrustAttendance, ...teacherAttendance]
   const data =
@@ -253,8 +236,8 @@ const ScreenContents: React.FC<Props> = ({
     >
       {showNotice && (
         <Toast visible={true}>
-          In order to print child tags, you are required to set a PIN. Please
-          see the Welcome Desk for assistance with creating a PIN.
+          In order to print child tags, you are required to set a PIN. Please see the
+          Welcome Desk for assistance with creating a PIN.
         </Toast>
       )}
       <View style={{ margin: 20 }}>

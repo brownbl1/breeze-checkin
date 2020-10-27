@@ -1,14 +1,13 @@
+import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useState } from 'react'
-import { View, Text } from 'react-native'
-import { connect } from 'react-redux'
+import { Text, View } from 'react-native'
 import { Icon } from 'react-native-elements'
-import { RouteProp } from '@react-navigation/native'
-
-import { SettingsStackParamList } from '../../navigation/AppNavigator'
-import { Dispatch } from '../../store'
+import { connect } from 'react-redux'
 import { SettingsList } from '../../components/SettingsList'
 import { mapData } from '../../helpers'
+import { SettingsStackParamList } from '../../navigation/AppNavigator'
+import { Dispatch } from '../../store'
 
 type DowOptions = {
   name: string

@@ -11,9 +11,7 @@ export const getParentLabelHtml = ({
   parentNames,
 }: ParentLabelArgs) => {
   const dateTime = moment().format(`${DATE_FORMAT} h:mm A`)
-  const childrenHtml = selectedChildrenNames
-    .map((name) => `<div>${name}</div>`)
-    .join('')
+  const childrenHtml = selectedChildrenNames.map((name) => `<div>${name}</div>`).join('')
 
   const column = `
 <div class="column">

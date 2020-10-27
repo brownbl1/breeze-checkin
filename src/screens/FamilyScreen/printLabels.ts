@@ -1,15 +1,11 @@
 import * as Print from 'expo-print'
+import { Printer } from 'expo-print'
 import Toast from 'react-native-root-toast'
-import {
-  getChildLabelHtml,
-  getParentLabelHtml,
-  getAdultLabelHtml,
-} from './htmlBuilder'
 import { ALLERGIES_KEY, ENTRUST_KEY } from '../../env'
+import { CommonPersonDetails } from '../../models/dataModel'
 import { PrintDetailsState } from '../../models/printDetails'
 import { RelationshipsState } from '../../models/selectedChildRelationships'
-import { CommonPersonDetails } from '../../models/dataModel'
-import { Printer } from 'expo-print'
+import { getAdultLabelHtml, getChildLabelHtml, getParentLabelHtml } from './htmlBuilder'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -33,9 +29,7 @@ export const printLabels = async ({
   Toast.show('Your badges are being printed.')
   await sleep(500)
 
-  const checked = selectedChildRelationships.filter(
-    ({ details }) => details.checked,
-  )
+  const checked = selectedChildRelationships.filter(({ details }) => details.checked)
 
   const parentNames =
     printDetails.parents.map(({ first_name }) => first_name).join(' & ') +
@@ -44,9 +38,7 @@ export const printLabels = async ({
 
   const selectedChildrenNames = checked
     .filter((person) =>
-      printDetails.children.find(
-        ({ id }) => id === person.person_id && !isTeacher(id),
-      ),
+      printDetails.children.find(({ id }) => id === person.person_id && !isTeacher(id)),
     )
     .map(({ details }) => `${details.first_name} ${details.last_name}`)
 
@@ -85,9 +77,7 @@ export const printLabels = async ({
       checkIn(child.id)
     } else {
       const { details } = person
-      await printAsync(
-        getAdultLabelHtml(`${details.first_name} ${details.last_name}`),
-      )
+      await printAsync(getAdultLabelHtml(`${details.first_name} ${details.last_name}`))
 
       checkInTeacher(details.id)
     }

@@ -2,7 +2,6 @@ import { createModel } from '@rematch/core'
 import { Printer } from 'expo-print'
 import moment from 'moment'
 import { DATE_FORMAT } from '../env'
-
 import { RootModel } from './models'
 
 export type Settings = {

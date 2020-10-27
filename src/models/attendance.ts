@@ -1,6 +1,6 @@
 import { createModel } from '@rematch/core'
 import { Attendance } from './dataModel'
-import { RootModel, baseUrl, options } from './models'
+import { baseUrl, options, RootModel } from './models'
 
 export type AttendanceState = {
   entrustAttendance: Attendance[] | null
@@ -16,10 +16,7 @@ export const attendance = createModel<RootModel>()({
     set: (_, attendance: AttendanceState) => attendance,
   },
   effects: () => ({
-    checkInChildAsync: async (
-      personId: string,
-      { events: { entrustEvent } },
-    ) => {
+    checkInChildAsync: async (personId: string, { events: { entrustEvent } }) => {
       if (entrustEvent && entrustEvent.id) {
         await fetch(
           `${baseUrl}/api/events/attendance/add?person_id=${personId}&instance_id=${entrustEvent.id}`,
@@ -27,10 +24,7 @@ export const attendance = createModel<RootModel>()({
         )
       }
     },
-    checkInTeacherAsync: async (
-      personId: string,
-      { events: { teacherEvent } },
-    ) => {
+    checkInTeacherAsync: async (personId: string, { events: { teacherEvent } }) => {
       if (teacherEvent && teacherEvent.id) {
         await fetch(
           `${baseUrl}/api/events/attendance/add?person_id=${personId}&instance_id=${teacherEvent.id}`,

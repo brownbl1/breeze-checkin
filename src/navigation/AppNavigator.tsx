@@ -1,24 +1,20 @@
-import React from 'react'
-import { AppLoading } from 'expo'
-import { createStackNavigator } from '@react-navigation/stack'
-import {
-  createDrawerNavigator,
-  DrawerNavigationProp,
-} from '@react-navigation/drawer'
+import { createDrawerNavigator, DrawerNavigationProp } from '@react-navigation/drawer'
 import { NavigationContainer } from '@react-navigation/native'
-
-import { MenuButton } from './MenuButton'
+import { createStackNavigator } from '@react-navigation/stack'
+import { AppLoading } from 'expo'
+import React from 'react'
 import {
-  useStartingScreen,
-  HomeScreen,
   FamilyScreen,
-  SettingsScreen,
-  StartingScreen,
+  HomeScreen,
   SelectDateScreen,
   SelectDowScreen,
   SelectEventScreen,
   SelectParentTagsScreen,
+  SettingsScreen,
+  StartingScreen,
+  useStartingScreen,
 } from '../screens'
+import { MenuButton } from './MenuButton'
 
 type NavProps = {
   navigation: RootNavigationProp
@@ -43,11 +39,7 @@ const HomeStack = createStackNavigator<HomeStackParamList>()
 const RootHomeStack = () => {
   return (
     <HomeStack.Navigator>
-      <HomeStack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={leftNavOpts}
-      />
+      <HomeStack.Screen name="Home" component={HomeScreen} options={leftNavOpts} />
       <HomeStack.Screen name="Family" component={FamilyScreen} />
     </HomeStack.Navigator>
   )
@@ -73,10 +65,7 @@ const RootSettingsStack = () => {
       />
       <SettingsStack.Screen name="Select Date" component={SelectDateScreen} />
       <SettingsStack.Screen name="Select Event" component={SelectEventScreen} />
-      <SettingsStack.Screen
-        name="Select Day of Week"
-        component={SelectDowScreen}
-      />
+      <SettingsStack.Screen name="Select Day of Week" component={SelectDowScreen} />
       <SettingsStack.Screen
         name="Select Number of Parent Tags"
         component={SelectParentTagsScreen}

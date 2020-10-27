@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-
 import { missingSettings } from '../models/settings'
 import { store } from '../store'
 

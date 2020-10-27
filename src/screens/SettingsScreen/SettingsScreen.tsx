@@ -1,18 +1,17 @@
 import { StackNavigationProp } from '@react-navigation/stack'
-import { selectPrinterAsync } from 'expo-print'
 import Constants from 'expo-constants'
-import React from 'react'
-import { View, Text } from 'react-native'
-import { connect } from 'react-redux'
-import { Icon } from 'react-native-elements'
+import { selectPrinterAsync } from 'expo-print'
 import moment from 'moment'
-
+import React from 'react'
+import { Text, View } from 'react-native'
+import { Icon } from 'react-native-elements'
+import { connect } from 'react-redux'
+import { SettingsList } from '../../components/SettingsList'
+import { DATE_FORMAT } from '../../env'
+import { BreezeEvent } from '../../models/dataModel'
+import { daysOfWeek } from '../../models/settings'
 import { SettingsStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
-import { daysOfWeek } from '../../models/settings'
-import { SettingsList } from '../../components/SettingsList'
-import { BreezeEvent } from '../../models/dataModel'
-import { DATE_FORMAT } from '../../env'
 
 const setPrinter = async () => {
   const selected = Constants?.platform?.ios
@@ -64,8 +63,7 @@ const ScreenContents: React.FC<Props> = ({
   events,
 }) => {
   const dateString =
-    settings.date &&
-    moment(settings.date, DATE_FORMAT).format(`ddd, ${DATE_FORMAT}`)
+    settings.date && moment(settings.date, DATE_FORMAT).format(`ddd, ${DATE_FORMAT}`)
 
   const data = [
     {
@@ -141,9 +139,7 @@ const ScreenContents: React.FC<Props> = ({
               }}
             >
               <Text style={{ color: '#888' }}>{item.value}</Text>
-              {item.showArrow && (
-                <Icon name="keyboard-arrow-right" color="#888888" />
-              )}
+              {item.showArrow && <Icon name="keyboard-arrow-right" color="#888888" />}
             </View>
           </React.Fragment>
         )}

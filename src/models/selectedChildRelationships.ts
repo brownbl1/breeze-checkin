@@ -1,6 +1,6 @@
 import { createModel } from '@rematch/core'
 import { FamilyPerson, Person } from './dataModel'
-import { RootModel, baseUrl, options, mapPerson } from './models'
+import { baseUrl, mapPerson, options, RootModel } from './models'
 
 export type RelationshipsState = FamilyPerson[] | null
 
