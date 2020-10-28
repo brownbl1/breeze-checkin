@@ -6,7 +6,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@expo/vector-icons": "^10.2.1",
@@ -36,6 +37,7 @@
     "sentry-expo": "^3.0.2"
   },
   "devDependencies": {
+    "prettier": "^2.1.2",
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
     "@types/react-redux": "^7.1.1",
