@@ -1,7 +1,6 @@
 import React from 'react'
 import { Image, View } from 'react-native'
-
-const logo = require('../assets/logo.png')
+import logo from '../assets/logo.png'
 
 export const ImageView = () => (
   <View style={{ flex: 1 }}>

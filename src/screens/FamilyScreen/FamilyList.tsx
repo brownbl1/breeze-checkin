@@ -1,10 +1,9 @@
 import React from 'react'
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
 import { Icon } from 'react-native-elements'
+import placeholder from '../../assets/gray.png'
 import { source } from '../../helpers'
 import { ListPerson } from '../../models/selected'
-
-const placeholder = require('../../assets/gray.png')
 
 const bottomBorder = {
   borderColor: '#aaa',

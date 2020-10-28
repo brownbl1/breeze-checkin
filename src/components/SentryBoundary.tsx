@@ -10,7 +10,7 @@ type State = {
   errorInfo?: any
 }
 
-export class SentryBoundary extends React.Component<{}, State> {
+export class SentryBoundary extends React.Component<unknown, State> {
   state = { hasError: false, eventId: null }
 
   static getDerivedStateFromError() {

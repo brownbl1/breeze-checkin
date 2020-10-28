@@ -1,7 +1,6 @@
 import { Alert } from 'react-native'
 import { baseUrl } from './api'
-
-const placeholder = require('./assets/gray.png')
+import placeholder from './assets/gray.png'
 
 type Stringable = {
   toString(): string

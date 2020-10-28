@@ -1,10 +1,9 @@
 import React from 'react'
 import { FlatList, Image, Keyboard, Text, TouchableOpacity, View } from 'react-native'
 import { Icon } from 'react-native-elements'
+import placeholder from '../../assets/gray.png'
 import { source } from '../../helpers'
 import { EventPerson } from '../../models/dataModel'
-
-const placeholder = require('../../assets/gray.png')
 
 type OnPress = (item: EventPerson) => void
 
