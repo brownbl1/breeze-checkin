@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import React from 'react'
 import { Text, View } from 'react-native'
 import * as Sentry from 'sentry-expo'
@@ -6,8 +7,8 @@ import { store } from '../store'
 type State = {
   hasError: boolean
   eventId: string | null
-  error?: any
-  errorInfo?: any
+  error?: Error | null
+  errorInfo?: unknown
 }
 
 export class SentryBoundary extends React.Component<unknown, State> {
@@ -19,7 +20,7 @@ export class SentryBoundary extends React.Component<unknown, State> {
     }
   }
 
-  componentDidCatch = (error: any, errorInfo: any) => {
+  componentDidCatch = (error: Error | null, errorInfo: unknown) => {
     if (!__DEV__) {
       const eventId = Sentry.Native.captureException(error, {
         extra: {

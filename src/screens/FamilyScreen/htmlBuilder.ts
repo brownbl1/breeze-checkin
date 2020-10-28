@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { DATE_FORMAT } from '../../env'
 
-export const getStyle = () => `
+export const getStyle = (): string => `
 <style>
   html,
   body {
@@ -59,7 +59,7 @@ export const getStyle = () => `
 </style>
 `
 
-export const getParentLabelHtml = (childNames: string[], parentNames: string) => {
+export const getParentLabelHtml = (childNames: string[], parentNames: string): string => {
   const dateTime = moment().format(`${DATE_FORMAT} h:mm A`)
   const childrenHtml = childNames.map((name) => `<div>${name}</div>`).join('')
 
@@ -79,7 +79,7 @@ export const getChildLabelHtml = (
   parentNames: string,
   medical: string,
   entrustId: string,
-) =>
+): string =>
   `
 <div class="page">
   <div class="child-label">
@@ -96,7 +96,7 @@ export const getChildLabelHtml = (
 </div>
 `
 
-export const getAdultLabelHtml = (name: string) =>
+export const getAdultLabelHtml = (name: string): string =>
   `
 <div class="page">
   <div class="adult-label">${name}</div>

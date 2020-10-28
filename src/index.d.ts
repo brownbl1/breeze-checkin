@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module 'redux-watch' {
   type UnSubscribe = () => void
   type StoreChangeObserver = (newValue: any, oldValue: any, path: string) => void

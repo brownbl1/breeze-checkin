@@ -19,7 +19,7 @@ store.subscribe(
   watch(
     store.getState,
     'settings.date',
-  )((newVal, oldVal, path) => {
+  )(() => {
     store.dispatch.events.selectEntrustEventAsync()
     store.dispatch.events.selectTeacherEventAsync()
   }),
@@ -29,7 +29,7 @@ store.subscribe(
   watch(
     store.getState,
     'settings.entrustEventId',
-  )((newVal, oldVal, path) => {
+  )(() => {
     store.dispatch.events.selectEntrustEventAsync()
   }),
 )
@@ -38,7 +38,7 @@ store.subscribe(
   watch(
     store.getState,
     'settings.teacherEventId',
-  )((newVal, oldVal, path) => {
+  )(() => {
     store.dispatch.events.selectTeacherEventAsync()
   }),
 )
@@ -47,7 +47,7 @@ store.subscribe(
   watch(
     store.getState,
     'selected.person',
-  )((newVal, oldVal, path) => {
+  )(() => {
     store.dispatch.selected.selectRelatedAsync()
   }),
 )

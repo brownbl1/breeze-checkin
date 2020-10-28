@@ -13,7 +13,7 @@ export type Settings = {
   printer: Printer | null
 }
 
-export const missingSettings = (settings: Settings) =>
+export const missingSettings = (settings: Settings): boolean =>
   !settings.entrustEventId ||
   !settings.teacherEventId ||
   !settings.date ||
@@ -31,7 +31,7 @@ export const daysOfWeek = [
   'Saturday',
 ]
 
-export const getNextDate = (dayINeed: number, currentDate?: string) => {
+export const getNextDate = (dayINeed: number, currentDate?: string): string => {
   if (currentDate && moment(currentDate, DATE_FORMAT).day() === dayINeed) {
     return currentDate
   }

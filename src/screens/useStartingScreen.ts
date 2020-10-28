@@ -8,7 +8,7 @@ export enum StartingScreen {
   Settings,
 }
 
-export const useStartingScreen = () => {
+export const useStartingScreen = (): StartingScreen => {
   const [startingScreen, setStartingScreen] = useState<StartingScreen>(
     StartingScreen.Loading,
   )

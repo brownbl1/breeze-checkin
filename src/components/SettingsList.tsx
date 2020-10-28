@@ -89,6 +89,7 @@ type Props<T extends Base> = {
 }
 
 export class SettingsList<T extends Base> extends Component<Props<T>> {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   render() {
     return (
       <FlatList
