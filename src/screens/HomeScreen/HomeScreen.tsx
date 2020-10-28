@@ -74,8 +74,6 @@ const ScreenContents: React.FC<Props> = ({
     navigation.navigate('Family', {
       childName: `${person.first_name} ${person.last_name}`,
     })
-
-    setTimeout(() => setText(''), 500)
   }
 
   return (

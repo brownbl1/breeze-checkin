@@ -61,3 +61,12 @@ export const checkInPerson = async (eventId: string, personId: string) => {
     options,
   )
 }
+
+export const getAttendance = async (eventId: string) => {
+  const attendance = await fetch(
+    `${baseUrl}/api/events/attendance/list?instance_id=${eventId}`,
+    options,
+  ).then((res) => res.json())
+
+  return attendance
+}

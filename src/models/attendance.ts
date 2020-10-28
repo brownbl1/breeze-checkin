@@ -4,17 +4,24 @@ import { Attendance } from './dataModel'
 import { RootModel } from './models'
 
 export type AttendanceState = {
-  entrustAttendance: Attendance[] | null
-  teacherAttendance: Attendance[] | null
+  entrustAttendance: Attendance[]
+  teacherAttendance: Attendance[]
 }
 
 export const attendance = createModel<RootModel>()({
   state: {
-    entrustAttendance: null,
-    teacherAttendance: null,
+    entrustAttendance: [],
+    teacherAttendance: [],
   } as AttendanceState,
   reducers: {
-    set: (_, attendance: AttendanceState) => attendance,
+    setEntrust: (state, entrustAttendance: Attendance[]) => ({
+      ...state,
+      entrustAttendance,
+    }),
+    setTeacher: (state, teacherAttendance: Attendance[]) => ({
+      ...state,
+      teacherAttendance,
+    }),
   },
   effects: () => ({
     checkInChildAsync: async (personId: string, { events: { entrustEvent } }) => {

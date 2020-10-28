@@ -30,6 +30,7 @@ const mapDispatch = (dispatch: Dispatch) => ({
   toggleChecked: dispatch.selected.toggleChecked,
   checkIn: dispatch.attendance.checkInChildAsync,
   checkInTeacher: dispatch.attendance.checkInTeacherAsync,
+  clearSearch: () => dispatch.searchText.set(''),
 })
 
 type FamilyNavigationProp = {
@@ -50,6 +51,7 @@ const ScreenContents: React.FC<Props> = ({
   checkIn,
   checkInTeacher,
   toggleChecked,
+  clearSearch,
 }) => {
   const personIsSelected = selected.list.filter((p) => p.selected).length > 0
   const childIsSelected =
@@ -121,6 +123,7 @@ const ScreenContents: React.FC<Props> = ({
       markupFormatterIOS: html.join(''),
     })
 
+    clearSearch()
     navigation.goBack()
   }
 

@@ -1,5 +1,5 @@
-import { createModel } from '@rematch/core'
-import { getEligibleForEvent, getEvent, getEventsForDate } from '../api'
+import { createModel, RematchDispatch } from '@rematch/core'
+import { getAttendance, getEligibleForEvent, getEvent, getEventsForDate } from '../api'
 import { BreezeEvent, EventPerson } from './dataModel'
 import { RootModel } from './models'
 
@@ -17,6 +17,7 @@ enum Clear {
   TeacherEvent,
 }
 
+const INTERVAL = 1000 * 60 * 1 // 1 minute
 const startsWith = (text: string) => (name: string) => name.startsWith(text)
 
 export const events = createModel<RootModel>()({
@@ -58,7 +59,6 @@ export const events = createModel<RootModel>()({
       teacherEvent: payload.teacherEvent,
       teacherEventPeople: payload.teacherEventPeople,
     }),
-    loading: (state) => ({ ...state, loading: true }),
     clear: (state, payload: Clear) => {
       switch (payload) {
         case Clear.All:
@@ -100,6 +100,10 @@ export const events = createModel<RootModel>()({
         getEligibleForEvent(entrustEventId),
       ])
       dispatch.events.selectEntrustEvent({ entrustEvent, entrustEventPeople })
+
+      clearInterval(entrustAttendanceInt)
+      setInterval(() => pollEntrustAttendance(dispatch, entrustEventId), INTERVAL)
+      pollEntrustAttendance(dispatch, entrustEventId)
     },
     selectTeacherEventAsync: async (_, { settings }) => {
       const events = await getEventsForDate(settings.date)
@@ -116,33 +120,29 @@ export const events = createModel<RootModel>()({
         getEligibleForEvent(teacherEventId),
       ])
       dispatch.events.selectTeacherEvent({ teacherEvent, teacherEventPeople })
+
+      clearInterval(teacherAttendanceInt)
+      setInterval(() => pollTeacherAttendance(dispatch, teacherEventId), INTERVAL)
+      pollTeacherAttendance(dispatch, teacherEventId)
     },
   }),
 })
 
-// const fetchAttendance = async (
-//   dispatch: RematchDispatch<RootModel>,
-//   entrustEventId: string,
-//   teacherEventId: string,
-// ) => {
-//   const entrustAttendanceProm = fetch(
-//     `${baseUrl}/api/events/attendance/list?instance_id=${entrustEventId}`,
-//     options,
-//   )
-//     .then((res) => res.json())
-//     .catch(() => []) as Promise<Attendance[]>
+let entrustAttendanceInt: number
+let teacherAttendanceInt: number
 
-//   const teacherAttendanceProm = fetch(
-//     `${baseUrl}/api/events/attendance/list?instance_id=${teacherEventId}`,
-//     options,
-//   )
-//     .then((res) => res.json())
-//     .catch(() => []) as Promise<Attendance[]>
+const pollEntrustAttendance = async (
+  dispatch: RematchDispatch<RootModel>,
+  eventId: string,
+) => {
+  const attendance = await getAttendance(eventId)
+  dispatch.attendance.setEntrust(attendance)
+}
 
-//   const [entrustAttendance, teacherAttendance] = await Promise.all([
-//     entrustAttendanceProm,
-//     teacherAttendanceProm,
-//   ])
-
-//   dispatch.attendance.set({ entrustAttendance, teacherAttendance })
-// }
+const pollTeacherAttendance = async (
+  dispatch: RematchDispatch<RootModel>,
+  eventId: string,
+) => {
+  const attendance = await getAttendance(eventId)
+  dispatch.attendance.setTeacher(attendance)
+}

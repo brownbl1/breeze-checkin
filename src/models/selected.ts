@@ -1,6 +1,6 @@
 import { createModel } from '@rematch/core'
 import { getPerson } from '../api'
-import { EventPerson, Person } from './dataModel'
+import { Attendance, EventPerson, Person } from './dataModel'
 import { RootModel } from './models'
 
 type SelectedState = {
@@ -22,6 +22,16 @@ export type ListPerson = IPerson & {
   selected?: boolean
   checkedIn?: boolean
 }
+
+const mapAttendance = (attendance: Attendance[]) => (p: ListPerson) => ({
+  ...p,
+  checkedIn: p.checkedIn || !!attendance.find((a) => a.person_id === p.id),
+})
+
+const attendance = (state: SelectedState, attendance: Attendance[]) => ({
+  ...state,
+  list: state.list.map(mapAttendance(attendance)),
+})
 
 export const selected = createModel<RootModel>()({
   state: {
@@ -45,7 +55,7 @@ export const selected = createModel<RootModel>()({
         person,
       }
     },
-    setList: (state, list: IPerson[]) => {
+    setList: (state, list: ListPerson[]) => {
       return {
         ...state,
         list,
@@ -69,6 +79,8 @@ export const selected = createModel<RootModel>()({
         parents,
       }
     },
+    'attendance/setEntrust': attendance,
+    'attendance/setTeacher': attendance,
     toggleChecked: (state, personId: string) => {
       return {
         ...state,
@@ -85,13 +97,20 @@ export const selected = createModel<RootModel>()({
 
       if (!rootState.selected.person) return
 
+      const attendance = [
+        ...rootState.attendance.entrustAttendance,
+        ...rootState.attendance.teacherAttendance,
+      ]
+
       const person = await getPerson(rootState.selected.person.id)
       if (!person.family.length) {
-        dispatch.selected.setList([person])
+        dispatch.selected.setList([person].map(mapAttendance(attendance)))
         return
       }
 
-      dispatch.selected.setList(person.family.map((f) => f.details))
+      dispatch.selected.setList(
+        person.family.map((f) => f.details).map(mapAttendance(attendance)),
+      )
 
       const head = person.family.find(({ role_id }) => role_id === '4') // head of household
       const spouse = person.family.find(({ role_id }) => role_id === '5') // spouse
