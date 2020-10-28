@@ -1,7 +1,7 @@
 import Constants from 'expo-constants'
 import moment from 'moment'
-import { DATE_FORMAT, SUB } from '../env'
-import { BreezeEvent, EventPerson, Person } from '../models/dataModel'
+import { DATE_FORMAT, SUB } from './env'
+import { BreezeEvent, EventPerson, Person } from './models/dataModel'
 
 export const baseUrl = `https://${SUB}.breezechms.com`
 const options = { headers: { 'Api-key': Constants.manifest.extra.API_KEY } }
