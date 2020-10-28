@@ -1,53 +1,35 @@
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { Action } from '@rematch/core'
-import { Printer } from 'expo-print'
-import React from 'react'
-import { Alert, ImageSourcePropType, View } from 'react-native'
+import * as Print from 'expo-print'
+import React, { useEffect } from 'react'
+import { View } from 'react-native'
 import { Button } from 'react-native-elements'
 import Toast from 'react-native-root-toast'
 import { connect } from 'react-redux'
-import { PIN_KEY } from '../../env'
-import { Attendance, CommonPersonDetails } from '../../models/dataModel'
-import { PrintDetailsState } from '../../models/printDetails'
-import { RelationshipsState } from '../../models/selectedChildRelationships'
+import { ALLERGIES_KEY, ENTRUST_KEY, PIN_KEY } from '../../env'
+import { prompt } from '../../helpers'
+import { ListPerson } from '../../models/selected'
 import { HomeStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
 import { FamilyList } from './FamilyList'
-import { printLabels } from './printLabels'
+import {
+  getAdultLabelHtml,
+  getChildLabelHtml,
+  getParentLabelHtml,
+  getStyle,
+} from './htmlBuilder'
 
-export type FamilyRowData = {
-  thumb_path: string
-  checked: boolean
-  id: string
-  first_name: string
-  force_first_name: string
-  last_name: string
-  path: string
-  name: string
-  source: ImageSourcePropType
-  attendance: Attendance
-}
-
-const mapState = ({
-  selectedChildRelationships,
-  attendance,
-  printDetails,
-  settings: { printer },
-  events: { teacherEventPeople },
-}: RootState) => ({
-  selectedChildRelationships,
-  attendance,
-  printDetails,
-  printer,
-  teacherEventPeople,
+const mapState = (state: RootState) => ({
+  printer: state.settings.printer,
+  numParentTags: state.settings.numParentTags,
+  selected: state.selected,
+  events: state.events,
 })
 
 const mapDispatch = (dispatch: Dispatch) => ({
-  toggleChecked: dispatch.selectedChildRelationships.toggleChecked,
+  toggleChecked: dispatch.selected.toggleChecked,
   checkIn: dispatch.attendance.checkInChildAsync,
   checkInTeacher: dispatch.attendance.checkInTeacherAsync,
-  setText: dispatch.searchText.set,
 })
 
 type FamilyNavigationProp = {
@@ -59,172 +41,97 @@ type Props = FamilyNavigationProp &
   ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>
 
-const hasPin = ({ printDetails }: { printDetails: PrintDetailsState }) =>
-  printDetails && printDetails.head && printDetails.head.details[PIN_KEY]
-
-const requirePin = ({
-  printDetails,
-  selectedChildRelationships,
-  isChild,
-}: {
-  printDetails: PrintDetailsState
-  selectedChildRelationships: RelationshipsState
-  isChild: IsChild
-}) =>
-  (hasPin({ printDetails }) && childSelected({ selectedChildRelationships, isChild })) ||
-  childSelected({ selectedChildRelationships, isChild })
-
-type PrintProps = {
-  printDetails: PrintDetailsState
-  isChild: IsChild
-  selectedChildRelationships: RelationshipsState
-  setText: (payload: string) => Action<string>
-  goHome: () => void
-  checkIn: (payload: string) => Promise<void>
-  checkInTeacher: (payload: string) => Promise<void>
-  isTeacher: (person_id: string) => CommonPersonDetails
-  printer: Printer
-}
-
-const _onPressPrint = ({
-  printDetails,
-  isChild,
-  selectedChildRelationships,
-  setText,
-  goHome,
-  checkIn,
-  checkInTeacher,
-  isTeacher,
-  printer,
-}: PrintProps) => () => {
-  const { head } = printDetails
-  const name = `${head.first_name} ${head.last_name}`
-
-  const _print = async () => {
-    await printLabels({
-      printDetails,
-      selectedChildRelationships,
-      checkIn,
-      checkInTeacher,
-      isTeacher,
-      printer,
-    })
-    setText('')
-    goHome()
-  }
-
-  requirePin({ printDetails, isChild, selectedChildRelationships })
-    ? Alert.prompt(
-        'Enter PIN',
-        `Enter the Entrust PIN for\n${name}:`,
-        (text) =>
-          head.details[PIN_KEY] === text
-            ? _print()
-            : Toast.show('The PIN you entered was incorrect.'),
-        'secure-text',
-      )
-    : _print()
-}
-
-const hasDetails = ({ printDetails }: { printDetails: PrintDetailsState }) =>
-  printDetails && printDetails.head
-
-const listContainsChildren = ({
-  selectedChildRelationships,
-  isChild,
-}: {
-  selectedChildRelationships: RelationshipsState
-  isChild: IsChild
-}) => selectedChildRelationships && selectedChildRelationships.some(isChild)
-
-const childSelected = ({
-  selectedChildRelationships,
-  isChild,
-}: {
-  selectedChildRelationships: RelationshipsState
-  isChild: IsChild
-}) => {
-  return (
-    selectedChildRelationships &&
-    selectedChildRelationships.filter(({ details }) => details.checked).some(isChild)
-  )
-}
-
-type IsChild = ({ role_id, person_id }: { role_id: string; person_id: string }) => boolean
-
-type PrintData = {
-  data: FamilyRowData[]
-  printDetails: PrintDetailsState
-  selectedChildRelationships: RelationshipsState
-  isChild: IsChild
-}
-
-const enablePrint = ({
-  data,
-  printDetails,
-  selectedChildRelationships,
-  isChild,
-}: PrintData) => {
-  const personSelected = data && data.filter(({ checked }) => checked).length
-
-  const disableDueToChildSelectedAndMissingPin =
-    childSelected({ selectedChildRelationships, isChild }) && !hasPin({ printDetails })
-
-  return personSelected && !disableDueToChildSelectedAndMissingPin
-}
-
 const ScreenContents: React.FC<Props> = ({
   navigation,
-  selectedChildRelationships,
-  attendance: { entrustAttendance, teacherAttendance },
-  printDetails,
-  toggleChecked,
-  teacherEventPeople,
-  setText,
+  selected,
+  events,
+  numParentTags,
+  printer,
   checkIn,
   checkInTeacher,
-  printer,
+  toggleChecked,
 }) => {
-  const goHome = () => navigation.goBack()
+  const personIsSelected = selected.list.filter((p) => p.selected).length > 0
+  const childIsSelected =
+    selected.list.filter(
+      (p) =>
+        p.selected &&
+        selected.children.find((c) => c.id === p.id) &&
+        !events.teacherEventPeople.find((t) => t.id === p.id),
+    ).length > 0
 
-  const isTeacher = (person_id: string) =>
-    teacherEventPeople.find(({ id }) => id === person_id)
-  const isChild = ({ role_id, person_id }: { role_id: string; person_id: string }) =>
-    role_id === '2' && !isTeacher(person_id)
-
-  const attendance = [...entrustAttendance, ...teacherAttendance]
-  const data =
-    selectedChildRelationships &&
-    selectedChildRelationships.map(({ details }) => ({
-      attendance: attendance.find(({ person_id }) => person_id === details.id),
-      ...details,
-    }))
-
-  const printDisabled = !enablePrint({
-    data,
-    printDetails,
-    selectedChildRelationships,
-    isChild,
-  })
+  const headHasPin = !!selected.head?.details[PIN_KEY]
+  const missingPinAndChildSelected = !headHasPin && childIsSelected
+  const disablePrint = !personIsSelected || missingPinAndChildSelected
 
   const showNotice =
-    listContainsChildren({ selectedChildRelationships, isChild }) &&
-    hasDetails({ printDetails }) &&
-    !hasPin({ printDetails })
+    selected.list.length > 0 && !headHasPin && selected.children.length > 0
 
-  const onPressPrint = _onPressPrint({
-    printDetails,
-    isChild,
-    selectedChildRelationships,
-    setText,
-    goHome,
-    checkIn,
-    checkInTeacher,
-    isTeacher,
-    printer,
-  })
+  const print = async () => {
+    if (!printer?.url) {
+      Toast.show('Please select printer')
+      return
+    }
 
-  const onPressRow = (item: FamilyRowData) => toggleChecked(item.id)
+    Toast.show('Your badges are being printed.')
+
+    const checked = selected.list.filter((p) => p.selected)
+    const parentNames =
+      selected.parents.map((p) => p.first_name).join(' & ') +
+      ' ' +
+      selected.parents[0].last_name
+
+    const html = [getStyle()]
+    if (childIsSelected) {
+      const selectedChildren = selected.children.filter(
+        (c) =>
+          checked.find((k) => k.id === c.id) &&
+          !events.teacherEventPeople.find((t) => t.id === c.id),
+      )
+
+      const names = selectedChildren.map((p) => `${p.first_name} ${p.last_name}`)
+
+      const adultHtml = getParentLabelHtml(names, parentNames)
+      for (let i = 0; i < numParentTags; i++) html.push(adultHtml)
+
+      selectedChildren.forEach((c) => {
+        const childHtml = getChildLabelHtml(
+          `${c.first_name} ${c.last_name}`,
+          parentNames,
+          c.details[ALLERGIES_KEY],
+          c.details[ENTRUST_KEY],
+        )
+        html.push(childHtml)
+        checkIn(c.id)
+      })
+    }
+
+    const selectedHelpers = checked.filter((c) =>
+      events.teacherEventPeople.find((t) => t.id === c.id),
+    )
+
+    selectedHelpers.forEach((s) => {
+      html.push(getAdultLabelHtml(`${s.first_name} ${s.last_name}`))
+      checkInTeacher(s.id)
+    })
+
+    await Print.printAsync({
+      printerUrl: printer.url.replace('ipps', 'ipp'),
+      orientation: Print.Orientation.landscape,
+      markupFormatterIOS: html.join(''),
+    })
+
+    navigation.goBack()
+  }
+
+  const onPressPrint = () => {
+    const name = `${selected.head?.first_name} ${selected.head?.last_name}`
+    if (childIsSelected)
+      prompt(name, selected.head?.details[PIN_KEY])
+        .then(print)
+        .catch(() => Toast.show('The PIN you entered was incorrect.'))
+    else print()
+  }
 
   return (
     <View
@@ -235,20 +142,27 @@ const ScreenContents: React.FC<Props> = ({
       }}
     >
       {showNotice && (
-        <Toast visible={true}>
+        <Toast visible hideOnPress={false}>
           In order to print child tags, you are required to set a PIN. Please see the
           Welcome Desk for assistance with creating a PIN.
         </Toast>
       )}
+
       <View style={{ margin: 20 }}>
         <Button
           title="Print Selected"
           icon={{ name: 'print', color: 'white' }}
           onPress={onPressPrint}
-          disabled={printDisabled}
+          disabled={disablePrint}
         />
       </View>
-      {data && data.length && <FamilyList data={data} onPress={onPressRow} />}
+
+      {!!selected.list.length && (
+        <FamilyList
+          data={selected.list}
+          onPress={(item: ListPerson) => toggleChecked(item.id)}
+        />
+      )}
     </View>
   )
 }
@@ -256,6 +170,8 @@ const ScreenContents: React.FC<Props> = ({
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)
 
 export const FamilyScreen: React.FC<FamilyNavigationProp> = (props) => {
-  props.navigation.setOptions({ title: props.route.params.childName })
+  useEffect(() => {
+    props.navigation.setOptions({ title: props.route.params.childName })
+  }, [])
   return <ConnectedContents {...props} />
 }

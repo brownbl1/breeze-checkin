@@ -1,7 +1,8 @@
 import React from 'react'
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
 import { Icon } from 'react-native-elements'
-import { FamilyRowData } from './FamilyScreen'
+import { source } from '../../helpers'
+import { ListPerson } from '../../models/selected'
 
 const placeholder = require('../../assets/gray.png')
 
@@ -11,9 +12,9 @@ const bottomBorder = {
 }
 
 type RowItemProps = {
-  item: FamilyRowData
+  item: ListPerson
   index: number
-  onPress: (item: FamilyRowData) => void
+  onPress: (item: ListPerson) => void
   itemCount: number
 }
 
@@ -40,20 +41,21 @@ const FamilyRowItem: React.FC<RowItemProps> = ({ item, onPress, index, itemCount
           <Image
             style={{
               flex: 1,
-              resizeMode: 'contain',
+              height: undefined,
+              width: undefined,
             }}
             defaultSource={placeholder}
-            source={item.source}
+            source={source(item)}
             resizeMode="contain"
           />
         </View>
-        <Text>{item.name}</Text>
+        <Text>{`${item.first_name} ${item.last_name}`}</Text>
       </View>
-      {item.checked && <Icon name="checkbox-marked" type="material-community" />}
-      {item.attendance && !item.checked && (
+      {item.selected && <Icon name="checkbox-marked" type="material-community" />}
+      {item.checkedIn && !item.selected && (
         <Icon name="checkbox-intermediate" type="material-community" />
       )}
-      {!item.attendance && !item.checked && (
+      {!item.checkedIn && !item.selected && (
         <Icon name="checkbox-blank-outline" type="material-community" />
       )}
     </View>
@@ -61,8 +63,8 @@ const FamilyRowItem: React.FC<RowItemProps> = ({ item, onPress, index, itemCount
 )
 
 type Props = {
-  data: FamilyRowData[]
-  onPress: (item: FamilyRowData) => void
+  data: ListPerson[]
+  onPress: (item: ListPerson) => void
 }
 
 export const FamilyList: React.FC<Props> = ({ data, onPress }) => (

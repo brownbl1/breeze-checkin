@@ -5,6 +5,5 @@ export const searchText = createModel<RootModel>()({
   state: '',
   reducers: {
     set: (_, text: string) => text,
-    'events/loading': () => '',
   },
 })

@@ -1,28 +1,26 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect } from 'react'
-import { Image, View } from 'react-native'
+import { View } from 'react-native'
 import { connect } from 'react-redux'
+import { ImageView } from '../../components/ImageView'
 import { AttendanceState } from '../../models/attendance'
-import { Person } from '../../models/dataModel'
+import { EventPerson } from '../../models/dataModel'
 import { EventState } from '../../models/events'
 import { HomeStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
 import PeopleList from './PeopleList'
 import { Search } from './SearchBar'
 
-const logo = require('../../assets/logo.png')
-
 const mapState = (state: RootState) => ({
   events: state.events,
   searchText: state.searchText,
   attendance: state.attendance,
   date: state.settings.date,
-  searchList: state.searchList,
 })
 
 const mapDispatch = (dispatch: Dispatch) => ({
-  onChangeText: dispatch.searchText.set,
-  // onSelectPerson: dispatch.selectedChild.selectAsync,
+  setText: dispatch.searchText.set,
+  setPerson: dispatch.selected.setPerson,
 })
 
 type UpdateHeader = {
@@ -39,12 +37,22 @@ type Props = HomeNavigationProp &
   ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>
 
+const getHeaderString = ({ events, attendance, date }: UpdateHeader) => {
+  const { entrustAttendance, teacherAttendance } = attendance
+
+  const title = `${events.entrustEvent?.name} - ${date}`
+  if (entrustAttendance && teacherAttendance) {
+    return `${title} (${entrustAttendance.length}, ${teacherAttendance.length})`
+  }
+
+  return title
+}
+
 const ScreenContents: React.FC<Props> = ({
   navigation,
   searchText,
-  onChangeText,
-  searchList: { filtered },
-  // onSelectPerson,
+  setText,
+  setPerson,
   events,
   attendance,
   date,
@@ -61,39 +69,24 @@ const ScreenContents: React.FC<Props> = ({
     attendance.teacherAttendance,
   ])
 
-  const onPress = async (item: Person) => {
-    // await onSelectPerson(item)
-    // props.navigation.navigate('Family')
-  }
+  const onPress = (person: EventPerson) => {
+    setPerson(person)
+    navigation.navigate('Family', {
+      childName: `${person.first_name} ${person.last_name}`,
+    })
 
-  const ImageView = () => (
-    <View style={{ flex: 1 }}>
-      <Image
-        style={{ flex: 1, height: undefined, width: undefined }}
-        source={logo}
-        resizeMode="contain"
-      />
-    </View>
-  )
+    setTimeout(() => setText(''), 500)
+  }
 
   return (
     <View style={{ height: '100%' }}>
-      <Search value={searchText} onChangeText={onChangeText} />
-      {!filtered.length && <ImageView />}
-      {!!filtered.length && <PeopleList people={filtered} onPress={onPress} />}
+      <Search value={searchText} onChangeText={setText} />
+      {!events.filtered.length && <ImageView />}
+      {!!events.filtered.length && (
+        <PeopleList people={events.filtered} onPress={onPress} />
+      )}
     </View>
   )
-}
-
-const getHeaderString = ({ events, attendance, date }: UpdateHeader) => {
-  const { entrustAttendance, teacherAttendance } = attendance
-
-  const title = `${events.entrustEvent?.name} - ${date}`
-  if (entrustAttendance && teacherAttendance) {
-    return `${title} (${entrustAttendance.length}, ${teacherAttendance.length})`
-  }
-
-  return title
 }
 
 const ConnectedContents = connect(mapState, mapDispatch)(ScreenContents)

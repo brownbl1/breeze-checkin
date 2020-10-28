@@ -21,7 +21,6 @@ store.subscribe(
     'settings.date',
   )((newVal, oldVal, path) => {
     console.log('%s changed from %s to %s', path, oldVal, newVal)
-
     store.dispatch.events.selectEntrustEventAsync()
     store.dispatch.events.selectTeacherEventAsync()
   }),
@@ -33,7 +32,6 @@ store.subscribe(
     'settings.entrustEventId',
   )((newVal, oldVal, path) => {
     console.log('%s changed from %s to %s', path, oldVal, newVal)
-
     store.dispatch.events.selectEntrustEventAsync()
   }),
 )
@@ -44,8 +42,17 @@ store.subscribe(
     'settings.teacherEventId',
   )((newVal, oldVal, path) => {
     console.log('%s changed from %s to %s', path, oldVal, newVal)
-
     store.dispatch.events.selectTeacherEventAsync()
+  }),
+)
+
+store.subscribe(
+  watch(
+    store.getState,
+    'selected.person',
+  )((newVal, oldVal, path) => {
+    console.log('%s changed from %s to %s', path, oldVal, newVal)
+    store.dispatch.selected.selectRelatedAsync()
   }),
 )
 

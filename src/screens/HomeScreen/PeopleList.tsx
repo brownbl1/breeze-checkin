@@ -1,14 +1,15 @@
 import React from 'react'
 import { FlatList, Image, Keyboard, Text, TouchableOpacity, View } from 'react-native'
 import { Icon } from 'react-native-elements'
-import { CommonPersonDetails } from '../../models/dataModel'
+import { source } from '../../helpers'
+import { EventPerson } from '../../models/dataModel'
 
 const placeholder = require('../../assets/gray.png')
 
-type OnPress = (item: CommonPersonDetails) => void
+type OnPress = (item: EventPerson) => void
 
 type RowProps = {
-  item: CommonPersonDetails
+  item: EventPerson
   onPress: OnPress
 }
 
@@ -36,16 +37,16 @@ const PeopleRowItem: React.FC<RowProps> = ({ item, onPress }) => (
           <Image
             style={{
               flex: 1,
-              height: null,
-              width: null,
+              height: undefined,
+              width: undefined,
               resizeMode: 'contain',
             }}
             defaultSource={placeholder}
-            source={item.source}
+            source={source(item)}
             resizeMode="contain"
           />
         </View>
-        <Text>{item.name}</Text>
+        <Text>{`${item.first_name} ${item.last_name}`}</Text>
       </View>
       <Icon name="keyboard-arrow-right" />
     </View>
@@ -53,7 +54,7 @@ const PeopleRowItem: React.FC<RowProps> = ({ item, onPress }) => (
 )
 
 type Props = {
-  people: CommonPersonDetails[]
+  people: EventPerson[]
   onPress: OnPress
 }
 

@@ -1,9 +1,9 @@
 import Constants from 'expo-constants'
 import moment from 'moment'
 import { DATE_FORMAT, SUB } from '../env'
-import { BreezeEvent, EventPerson } from '../models/dataModel'
+import { BreezeEvent, EventPerson, Person } from '../models/dataModel'
 
-const baseUrl = `https://${SUB}.breezechms.com`
+export const baseUrl = `https://${SUB}.breezechms.com`
 const options = { headers: { 'Api-key': Constants.manifest.extra.API_KEY } }
 
 type Cache = {
@@ -45,4 +45,19 @@ export const getEligibleForEvent = async (eventId: string) => {
   ).then((res) => res.json())) as EventPerson[]
 
   return eligible
+}
+
+export const getPerson = async (personId: string) => {
+  const person = (await fetch(`${baseUrl}/api/people/${personId}`, options).then((res) =>
+    res.json(),
+  )) as Person
+
+  return person
+}
+
+export const checkInPerson = async (eventId: string, personId: string) => {
+  await fetch(
+    `${baseUrl}/api/events/attendance/add?person_id=${personId}&instance_id=${eventId}`,
+    options,
+  )
 }

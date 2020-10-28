@@ -6,9 +6,9 @@ import { RootModel } from './models'
 export type EventState = {
   entrustEvent: BreezeEvent | null
   teacherEvent: BreezeEvent | null
-  entrustEventPeople: EventPerson[] | null
-  teacherEventPeople: EventPerson[] | null
-  loading: boolean
+  entrustEventPeople: EventPerson[]
+  teacherEventPeople: EventPerson[]
+  filtered: EventPerson[]
 }
 
 enum Clear {
@@ -17,15 +17,31 @@ enum Clear {
   TeacherEvent,
 }
 
+const startsWith = (text: string) => (name: string) => name.startsWith(text)
+
 export const events = createModel<RootModel>()({
   state: {
     entrustEvent: null,
     teacherEvent: null,
-    entrustEventPeople: null,
-    teacherEventPeople: null,
-    loading: false,
+    entrustEventPeople: [],
+    teacherEventPeople: [],
+    filtered: [],
   } as EventState,
   reducers: {
+    'searchText/set': (state, text: string) => {
+      if (text.length < 3) return { ...state, filtered: [] }
+
+      const matcher = startsWith(text.trim().toLowerCase())
+
+      const people = [...state.entrustEventPeople, ...state.teacherEventPeople]
+      const unique = [...new Map(people.map((item) => [item.id, item])).values()]
+      const filtered = unique.filter((person) => {
+        const name = `${person.first_name} ${person.last_name}`.toLowerCase()
+        return name.split(' ').some(matcher) || matcher(name)
+      })
+
+      return { ...state, filtered }
+    },
     selectEntrustEvent: (
       state,
       payload: { entrustEvent: BreezeEvent; entrustEventPeople: EventPerson[] },
@@ -50,20 +66,20 @@ export const events = createModel<RootModel>()({
             ...state,
             entrustEvent: null,
             teacherEvent: null,
-            entrustEventPeople: null,
-            teacherEventPeople: null,
+            entrustEventPeople: [],
+            teacherEventPeople: [],
           }
         case Clear.EntrustEvent:
           return {
             ...state,
             entrustEvent: null,
-            entrustEventPeople: null,
+            entrustEventPeople: [],
           }
         case Clear.TeacherEvent:
           return {
             ...state,
             teacherEvent: null,
-            teacherEventPeople: null,
+            teacherEventPeople: [],
           }
       }
     },
