@@ -3,9 +3,7 @@ import React, { useEffect } from 'react'
 import { View } from 'react-native'
 import { connect } from 'react-redux'
 import { ImageView } from '../../components/ImageView'
-import { AttendanceState } from '../../models/attendance'
 import { EventPerson } from '../../models/dataModel'
-import { EventState } from '../../models/events'
 import { HomeStackParamList } from '../../navigation/AppNavigator'
 import { Dispatch, RootState } from '../../store'
 import PeopleList from './PeopleList'
@@ -23,12 +21,6 @@ const mapDispatch = (dispatch: Dispatch) => ({
   setPerson: dispatch.selected.setPerson,
 })
 
-type UpdateHeader = {
-  events: EventState
-  date: string
-  attendance: AttendanceState
-}
-
 type HomeNavigationProp = {
   navigation: StackNavigationProp<HomeStackParamList, 'Home'>
 }
@@ -36,17 +28,6 @@ type HomeNavigationProp = {
 type Props = HomeNavigationProp &
   ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>
-
-const getHeaderString = ({ events, attendance, date }: UpdateHeader) => {
-  const { entrustAttendance, teacherAttendance } = attendance
-
-  const title = `${events.entrustEvent?.name} - ${date}`
-  if (entrustAttendance && teacherAttendance) {
-    return `${title} (${entrustAttendance.length}, ${teacherAttendance.length})`
-  }
-
-  return title
-}
 
 const ScreenContents: React.FC<Props> = ({
   navigation,
@@ -59,7 +40,8 @@ const ScreenContents: React.FC<Props> = ({
 }) => {
   useEffect(() => {
     if (events.entrustEvent) {
-      const title = getHeaderString({ events, date, attendance })
+      const { entrustAttendance, teacherAttendance } = attendance
+      const title = `${events.entrustEvent?.name} - ${date} (${entrustAttendance.length}, ${teacherAttendance.length})`
       navigation.setOptions({ title })
     }
   }, [

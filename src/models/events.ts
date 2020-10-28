@@ -86,6 +86,8 @@ export const events = createModel<RootModel>()({
   },
   effects: (dispatch) => ({
     selectEntrustEventAsync: async (_, { settings }) => {
+      clearInterval(entrustAttendanceInt)
+
       const events = await getEventsForDate(settings.date)
       const entrustEventId = events.find((e) => e.event_id === settings.entrustEventId)
         ?.id
@@ -101,11 +103,15 @@ export const events = createModel<RootModel>()({
       ])
       dispatch.events.selectEntrustEvent({ entrustEvent, entrustEventPeople })
 
-      clearInterval(entrustAttendanceInt)
-      setInterval(() => pollEntrustAttendance(dispatch, entrustEventId), INTERVAL)
+      entrustAttendanceInt = setInterval(
+        () => pollEntrustAttendance(dispatch, entrustEventId),
+        INTERVAL,
+      )
       pollEntrustAttendance(dispatch, entrustEventId)
     },
     selectTeacherEventAsync: async (_, { settings }) => {
+      clearInterval(teacherAttendanceInt)
+
       const events = await getEventsForDate(settings.date)
       const teacherEventId = events.find((e) => e.event_id === settings.teacherEventId)
         ?.id
@@ -121,8 +127,10 @@ export const events = createModel<RootModel>()({
       ])
       dispatch.events.selectTeacherEvent({ teacherEvent, teacherEventPeople })
 
-      clearInterval(teacherAttendanceInt)
-      setInterval(() => pollTeacherAttendance(dispatch, teacherEventId), INTERVAL)
+      teacherAttendanceInt = setInterval(
+        () => pollTeacherAttendance(dispatch, teacherEventId),
+        INTERVAL,
+      )
       pollTeacherAttendance(dispatch, teacherEventId)
     },
   }),
