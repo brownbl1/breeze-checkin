@@ -1,7 +1,7 @@
 import { createModel, RematchDispatch } from '@rematch/core'
+import { RootModel } from '.'
 import { getAttendance, getEligibleForEvent, getEvent, getEventsForDate } from '../api'
 import { BreezeEvent, EventPerson } from './dataModel'
-import { RootModel } from './models'
 
 export type EventState = {
   entrustEvent: BreezeEvent | null

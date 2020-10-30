@@ -18,14 +18,14 @@ Sentry.init({
 const persistor = getPersistor()
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export default function App() {
-  return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor} loading={<AppLoading />}>
-        <SentryBoundary>
-          <NavigationRoot />
-        </SentryBoundary>
-      </PersistGate>
-    </Provider>
-  )
-}
+const App = () => (
+  <Provider store={store}>
+    <PersistGate persistor={persistor} loading={<AppLoading />}>
+      <SentryBoundary>
+        <NavigationRoot />
+      </SentryBoundary>
+    </PersistGate>
+  </Provider>
+)
+
+export default App

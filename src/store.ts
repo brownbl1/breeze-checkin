@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage'
 import { init, RematchDispatch, RematchRootState } from '@rematch/core'
 import persistPlugin from '@rematch/persist'
 import watch from 'redux-watch'
-import { models, RootModel } from './models/models'
+import { models, RootModel } from './models'
 
 export const store = init<RootModel>({
   models,

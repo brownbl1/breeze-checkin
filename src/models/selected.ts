@@ -1,7 +1,7 @@
 import { createModel } from '@rematch/core'
+import { RootModel } from '.'
 import { getPerson } from '../api'
 import { Attendance, EventPerson, Person } from './dataModel'
-import { RootModel } from './models'
 
 type SelectedState = {
   person: EventPerson | null

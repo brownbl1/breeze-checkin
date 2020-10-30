@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import {
   FlatList,
   ListRenderItem,
@@ -7,30 +7,28 @@ import {
   View,
 } from 'react-native'
 
-function Spacer() {
-  return (
+const Spacer = () => (
+  <View
+    style={{
+      display: 'flex',
+      flexDirection: 'row',
+    }}
+  >
     <View
       style={{
-        display: 'flex',
-        flexDirection: 'row',
+        backgroundColor: 'white',
+        height: 1,
+        width: 13,
       }}
-    >
-      <View
-        style={{
-          backgroundColor: 'white',
-          height: 1,
-          width: 13,
-        }}
-      />
-      <View
-        style={{
-          backgroundColor: '#eee',
-          height: 1,
-        }}
-      />
-    </View>
-  )
-}
+    />
+    <View
+      style={{
+        backgroundColor: '#eee',
+        height: 1,
+      }}
+    />
+  </View>
+)
 
 const styles = StyleSheet.create({
   topBorder: {
@@ -88,24 +86,20 @@ type Props<T extends Base> = {
   renderItem: ListRenderItem<T>
 }
 
-export class SettingsList<T extends Base> extends Component<Props<T>> {
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  render() {
-    return (
-      <FlatList
-        data={this.props.data}
-        renderItem={({ item, index, separators }) => (
-          <RowItem
-            onPress={item.onPress ?? this.props.onPress}
-            index={index}
-            itemCount={this.props.data.length}
-          >
-            {this.props.renderItem({ item, index, separators })}
-          </RowItem>
-        )}
-        keyExtractor={(_, index) => index.toString()}
-        keyboardShouldPersistTaps="always"
-      />
-    )
-  }
-}
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const SettingsList = <T extends Base>(props: Props<T>) => (
+  <FlatList
+    data={props.data}
+    renderItem={({ item, index, separators }) => (
+      <RowItem
+        onPress={item.onPress ?? props.onPress}
+        index={index}
+        itemCount={props.data.length}
+      >
+        {props.renderItem({ item, index, separators })}
+      </RowItem>
+    )}
+    keyExtractor={(_, index) => index.toString()}
+    keyboardShouldPersistTaps="always"
+  />
+)

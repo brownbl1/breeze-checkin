@@ -1,7 +1,7 @@
 import { createModel } from '@rematch/core'
+import { RootModel } from '.'
 import { checkInPerson } from '../api'
 import { Attendance } from './dataModel'
-import { RootModel } from './models'
 
 export type AttendanceState = {
   entrustAttendance: Attendance[]
