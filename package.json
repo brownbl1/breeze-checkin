@@ -37,7 +37,6 @@
     "sentry-expo": "^3.0.2"
   },
   "devDependencies": {
-    "prettier": "^2.1.2",
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
     "@types/react-redux": "^7.1.1",
@@ -49,6 +48,7 @@
     "eslint-plugin-react-native": "^3.10.0",
     "patch-package": "^6.2.2",
     "postinstall-postinstall": "^2.1.0",
+    "prettier": "^2.1.2",
     "typescript": "^4.0.3"
   },
   "resolutions": {

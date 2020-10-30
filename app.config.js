@@ -5,7 +5,7 @@ export default {
     name: 'Breeze Checkin',
     slug: 'breeze-checkin-39',
     platforms: ['ios'],
-    version: '1.0.0',
+    version: '1.0.2',
     description: '',
     orientation: 'landscape',
     icon: './src/assets/icon.png',

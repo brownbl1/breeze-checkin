@@ -1,8 +1,16 @@
-import { createDrawerNavigator, DrawerNavigationProp } from '@react-navigation/drawer'
+import {
+  createDrawerNavigator,
+  DrawerContent,
+  DrawerContentComponentProps,
+  DrawerContentOptions,
+  DrawerNavigationProp,
+} from '@react-navigation/drawer'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { AppLoading } from 'expo'
+import Constants from 'expo-constants'
 import React from 'react'
+import { Text, View } from 'react-native'
 import {
   FamilyScreen,
   HomeScreen,
@@ -87,9 +95,25 @@ type RootDrawerProps = {
 
 type RootNavigationProp = DrawerNavigationProp<DrawerParamList>
 
+const CustomDrawerContent = (
+  props: DrawerContentComponentProps<DrawerContentOptions>,
+) => {
+  return (
+    <React.Fragment>
+      <DrawerContent {...props} />
+      <View style={{ padding: 10 }}>
+        <Text style={{ color: '#555555' }}>v{Constants.manifest.version}</Text>
+      </View>
+    </React.Fragment>
+  )
+}
+
 const RootDrawer: React.FC<RootDrawerProps> = ({ initialRouteName }) => {
   return (
-    <Drawer.Navigator initialRouteName={initialRouteName}>
+    <Drawer.Navigator
+      initialRouteName={initialRouteName}
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+    >
       <Drawer.Screen name="Home" component={RootHomeStack} />
       <Drawer.Screen name="Settings" component={RootSettingsStack} />
     </Drawer.Navigator>
