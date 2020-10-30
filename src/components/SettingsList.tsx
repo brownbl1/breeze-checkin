@@ -53,25 +53,23 @@ type ItemProps = {
 const RowItem: React.FC<ItemProps> = ({ onPress, index, itemCount, children }) => {
   return (
     <TouchableOpacity onPress={() => onPress && onPress(index)}>
-      <React.Fragment>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            backgroundColor: 'white',
-            padding: 13,
-            height: 50,
-            borderColor: 'white',
-            ...(index === 0 && styles.topBorder),
-            ...(index === itemCount - 1 && styles.bottomBorder),
-          }}
-        >
-          {children}
-        </View>
-        {index !== itemCount - 1 && <Spacer />}
-      </React.Fragment>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: 'white',
+          padding: 13,
+          height: 50,
+          borderColor: 'white',
+          ...(index === 0 && styles.topBorder),
+          ...(index === itemCount - 1 && styles.bottomBorder),
+        }}
+      >
+        {children}
+      </View>
+      {index !== itemCount - 1 && <Spacer />}
     </TouchableOpacity>
   )
 }
