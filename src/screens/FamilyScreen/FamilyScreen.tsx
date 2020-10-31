@@ -2,7 +2,7 @@ import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import * as Print from 'expo-print'
 import React, { useEffect } from 'react'
-import { View } from 'react-native'
+import { Text, View } from 'react-native'
 import { Button } from 'react-native-elements'
 import Toast from 'react-native-root-toast'
 import { connect } from 'react-redux'
@@ -68,6 +68,20 @@ const ScreenContents: React.FC<Props> = ({
 
   const showNotice =
     selected.list.length > 0 && !headHasPin && selected.children.length > 0
+
+  const showNotEligible =
+    personIsSelected &&
+    selected.list
+      .filter((l) => l.selected)
+      .some(
+        (p) =>
+          !selected.children.find((c) => c.id === p.id) &&
+          !events.teacherEventPeople.find((t) => t.id === p.id),
+      )
+
+  const notEligibleText = showNotEligible
+    ? `A selected person is not eligible for either the ${events.entrustEvent?.name} or ${events.teacherEvent?.name} events and will not be printed.`
+    : ''
 
   const print = async () => {
     if (!printer?.url) {
@@ -159,6 +173,8 @@ const ScreenContents: React.FC<Props> = ({
           disabled={disablePrint}
         />
       </View>
+
+      <Text style={{ marginBottom: 15 }}>{notEligibleText}</Text>
 
       {!!selected.list.length && (
         <FamilyList
