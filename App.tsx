@@ -1,5 +1,5 @@
 import { getPersistor } from '@rematch/persist'
-import { AppLoading } from 'expo'
+import AppLoading from 'expo-app-loading'
 import Constants from 'expo-constants'
 import React from 'react'
 import { Provider } from 'react-redux'

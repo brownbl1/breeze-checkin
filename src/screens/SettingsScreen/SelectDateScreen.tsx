@@ -43,7 +43,7 @@ const ScreenContents: React.FC<Props> = ({ navigation, settings, saveDate }) => 
     >
       <View style={{ width: '50%' }}>
         <DatePicker
-          mode="date"
+          display="spinner"
           value={date}
           onChange={(e, date) => setDate(date as Date)}
         />

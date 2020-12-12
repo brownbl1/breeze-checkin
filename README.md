@@ -9,4 +9,9 @@ npm i -g expo-cli yarn
 
 yarn install
 yarn start
+
+# other useful commands
+expo upgrade # upgrade sdk version
+yarn audit # checks for vulnerable packages
+yarn upgrade # info for upgrading other packages
 ```
