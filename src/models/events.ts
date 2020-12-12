@@ -136,8 +136,8 @@ export const events = createModel<RootModel>()({
   }),
 })
 
-let entrustAttendanceInt: number
-let teacherAttendanceInt: number
+let entrustAttendanceInt: NodeJS.Timeout
+let teacherAttendanceInt: NodeJS.Timeout
 
 const pollEntrustAttendance = async (
   dispatch: RematchDispatch<RootModel>,
