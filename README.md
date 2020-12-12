@@ -12,6 +12,7 @@ yarn start
 
 # other useful commands
 expo upgrade # upgrade sdk version
+
+yarn outdated # show outdated packages
 yarn audit # checks for vulnerable packages
-yarn upgrade # info for upgrading other packages
 ```
