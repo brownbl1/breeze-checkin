@@ -64,12 +64,13 @@ const ScreenContents: React.FC<Props> = ({
 
   const headHasPin = !!selected.head?.details[PIN_KEY]
   const missingPinAndChildSelected = !headHasPin && childIsSelected
-  const disablePrint = !personIsSelected || missingPinAndChildSelected
+  const disablePrint = selected.loading || !personIsSelected || missingPinAndChildSelected
 
   const showNotice =
     selected.list.length > 0 && !headHasPin && selected.children.length > 0
 
   const showNotEligible =
+    !selected.loading &&
     personIsSelected &&
     selected.list
       .filter((l) => l.selected)

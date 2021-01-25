@@ -9,6 +9,7 @@ type SelectedState = {
   head: Person | null
   children: Person[]
   parents: IPerson[]
+  loading: boolean
 }
 
 export type IPerson = {
@@ -40,6 +41,7 @@ export const selected = createModel<RootModel>()({
     head: null,
     children: [],
     parents: [],
+    loading: false,
   } as SelectedState,
   reducers: {
     clear: (state) => ({
@@ -79,6 +81,10 @@ export const selected = createModel<RootModel>()({
         parents,
       }
     },
+    setLoading: (state, loading: boolean) => ({
+      ...state,
+      loading,
+    }),
     'attendance/setEntrust': attendance,
     'attendance/setTeacher': attendance,
     toggleChecked: (state, personId: string) => {
@@ -94,6 +100,7 @@ export const selected = createModel<RootModel>()({
   effects: (dispatch) => ({
     selectRelatedAsync: async (_, rootState) => {
       dispatch.selected.clear()
+      dispatch.selected.setLoading(true)
 
       if (!rootState.selected.person) return
 
@@ -132,6 +139,7 @@ export const selected = createModel<RootModel>()({
       )
 
       dispatch.selected.setChildren(children)
+      dispatch.selected.setLoading(false)
     },
   }),
 })
