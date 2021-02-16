@@ -2,8 +2,8 @@ import 'dotenv/config'
 
 export default {
   expo: {
-    name: 'Breeze Checkin',
-    slug: 'breeze-checkin-39',
+    name: 'Breeze Checkin (Official)',
+    slug: 'breeze-checkin-40',
     platforms: ['ios'],
     version: '1.0.5',
     description: '',
