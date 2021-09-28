@@ -2,7 +2,7 @@ import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import * as Print from 'expo-print'
 import React, { useEffect } from 'react'
-import { Text, View } from 'react-native'
+import { Platform, Text, View } from 'react-native'
 import { Button } from 'react-native-elements'
 import Toast from 'react-native-root-toast'
 import { connect } from 'react-redux'
@@ -30,6 +30,7 @@ const mapDispatch = (dispatch: Dispatch) => ({
   toggleChecked: dispatch.selected.toggleChecked,
   checkIn: dispatch.attendance.checkInChildAsync,
   checkInTeacher: dispatch.attendance.checkInTeacherAsync,
+  checkInDoctrine101: dispatch.attendance.checkInDoctrine101Async,
   clearSearch: () => dispatch.searchText.set(''),
 })
 
@@ -50,6 +51,7 @@ const ScreenContents: React.FC<Props> = ({
   printer,
   checkIn,
   checkInTeacher,
+  checkInDoctrine101,
   toggleChecked,
   clearSearch,
 }) => {
@@ -59,7 +61,8 @@ const ScreenContents: React.FC<Props> = ({
       (p) =>
         p.selected &&
         selected.children.find((c) => c.id === p.id) &&
-        !events.teacherEventPeople.find((t) => t.id === p.id),
+        !events.teacherEventPeople.find((t) => t.id === p.id) &&
+        !events.doctrine101EventPeople.find((t) => t.id === p.id),
     ).length > 0
 
   const headHasPin = !!selected.head?.details[PIN_KEY]
@@ -123,20 +126,28 @@ const ScreenContents: React.FC<Props> = ({
       })
     }
 
-    const selectedHelpers = checked.filter((c) =>
-      events.teacherEventPeople.find((t) => t.id === c.id),
+    const selectedAdults = checked.filter(
+      (c) =>
+        events.teacherEventPeople.find((t) => t.id === c.id) ||
+        events.doctrine101EventPeople.find((t) => t.id === c.id),
     )
 
-    selectedHelpers.forEach((s) => {
+    const doctrine101 = checked.filter((c) =>
+      events.doctrine101EventPeople.find((t) => t.id === c.id),
+    )
+
+    selectedAdults.forEach((s) => {
       html.push(getAdultLabelHtml(`${s.first_name} ${s.last_name}`))
-      checkInTeacher(s.id)
+      if (doctrine101.find((d) => d.id === s.id)) checkInDoctrine101(s.id)
+      else checkInTeacher(s.id)
     })
 
-    await Print.printAsync({
-      printerUrl: printer.url.replace('ipps', 'ipp'),
-      orientation: Print.Orientation.landscape,
-      markupFormatterIOS: html.join(''),
-    })
+    if (Platform.OS === 'ios')
+      await Print.printAsync({
+        printerUrl: printer.url.replace('ipps', 'ipp'),
+        orientation: Print.Orientation.landscape,
+        markupFormatterIOS: html.join(''),
+      })
 
     clearSearch()
     navigation.goBack()

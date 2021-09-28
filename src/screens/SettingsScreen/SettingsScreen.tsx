@@ -116,6 +116,14 @@ const ScreenContents: React.FC<Props> = ({
         navigation.navigate('Select Event', { eventType: 'Entrust Teacher' })
       },
     },
+    {
+      setting: 'Doctrine 101 Event',
+      value: getEventString(events.doctrine101Event),
+      showArrow: true,
+      onPress: () => {
+        navigation.navigate('Select Event', { eventType: 'Doctrine 101' })
+      },
+    },
   ]
 
   return (

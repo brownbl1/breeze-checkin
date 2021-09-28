@@ -1,13 +1,18 @@
-import { createModel, RematchDispatch } from '@rematch/core'
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { createModel } from '@rematch/core'
 import { RootModel } from '.'
 import { getAttendance, getEligibleForEvent, getEvent, getEventsForDate } from '../api'
+import { Dispatch } from '../store'
 import { BreezeEvent, EventPerson } from './dataModel'
+import { Settings } from './settings'
 
 export type EventState = {
   entrustEvent: BreezeEvent | null
   teacherEvent: BreezeEvent | null
+  doctrine101Event: BreezeEvent | null
   entrustEventPeople: EventPerson[]
   teacherEventPeople: EventPerson[]
+  doctrine101EventPeople: EventPerson[]
   filtered: EventPerson[]
 }
 
@@ -15,17 +20,30 @@ enum Clear {
   All,
   EntrustEvent,
   TeacherEvent,
+  Doctrine101Event,
 }
 
-const INTERVAL = 1000 * 60 * 1 // 1 minute
+type SelectDto = {
+  event: BreezeEvent
+  eventPeople: EventPerson[]
+}
+
 const startsWith = (text: string) => (name: string) => name.startsWith(text)
+
+type Timeout = { id?: NodeJS.Timeout }
+
+const entrustAttendanceInt: Timeout = {}
+const teacherAttendanceInt: Timeout = {}
+const doctrine101AttendanceInt: Timeout = {}
 
 export const events = createModel<RootModel>()({
   state: {
     entrustEvent: null,
     teacherEvent: null,
+    doctrine101Event: null,
     entrustEventPeople: [],
     teacherEventPeople: [],
+    doctrine101EventPeople: [],
     filtered: [],
   } as EventState,
   reducers: {
@@ -34,7 +52,11 @@ export const events = createModel<RootModel>()({
 
       const matcher = startsWith(text.trim().toLowerCase())
 
-      const people = [...state.entrustEventPeople, ...state.teacherEventPeople]
+      const people = [
+        ...state.entrustEventPeople,
+        ...state.teacherEventPeople,
+        ...state.doctrine101EventPeople,
+      ]
       const unique = [...new Map(people.map((item) => [item.id, item])).values()]
       const filtered = unique.filter((person) => {
         const name = `${person.first_name} ${person.last_name}`.toLowerCase()
@@ -43,21 +65,20 @@ export const events = createModel<RootModel>()({
 
       return { ...state, filtered }
     },
-    selectEntrustEvent: (
-      state,
-      payload: { entrustEvent: BreezeEvent; entrustEventPeople: EventPerson[] },
-    ) => ({
+    selectEntrustEvent: (state, payload: SelectDto) => ({
       ...state,
-      entrustEvent: payload.entrustEvent,
-      entrustEventPeople: payload.entrustEventPeople,
+      entrustEvent: payload.event,
+      entrustEventPeople: payload.eventPeople,
     }),
-    selectTeacherEvent: (
-      state,
-      payload: { teacherEvent: BreezeEvent; teacherEventPeople: EventPerson[] },
-    ) => ({
+    selectTeacherEvent: (state, payload: SelectDto) => ({
       ...state,
-      teacherEvent: payload.teacherEvent,
-      teacherEventPeople: payload.teacherEventPeople,
+      teacherEvent: payload.event,
+      teacherEventPeople: payload.eventPeople,
+    }),
+    selectDoctrine101Event: (state, payload: SelectDto) => ({
+      ...state,
+      doctrine101Event: payload.event,
+      doctrine101EventPeople: payload.eventPeople,
     }),
     clear: (state, payload: Clear) => {
       switch (payload) {
@@ -66,8 +87,10 @@ export const events = createModel<RootModel>()({
             ...state,
             entrustEvent: null,
             teacherEvent: null,
+            doctrine101Event: null,
             entrustEventPeople: [],
             teacherEventPeople: [],
+            doctrine101EventPeople: [],
           }
         case Clear.EntrustEvent:
           return {
@@ -81,76 +104,85 @@ export const events = createModel<RootModel>()({
             teacherEvent: null,
             teacherEventPeople: [],
           }
+        case Clear.Doctrine101Event:
+          return {
+            ...state,
+            doctrine101Event: null,
+            doctrine101EventPeople: [],
+          }
       }
     },
   },
   effects: (dispatch) => ({
     selectEntrustEventAsync: async (_, { settings }) => {
-      clearInterval(entrustAttendanceInt)
-
-      const events = await getEventsForDate(settings.date)
-      const entrustEventId = events.find((e) => e.event_id === settings.entrustEventId)
-        ?.id
-
-      if (!entrustEventId) {
-        dispatch.events.clear(Clear.EntrustEvent)
-        return
-      }
-
-      const [entrustEvent, entrustEventPeople] = await Promise.all([
-        getEvent(entrustEventId),
-        getEligibleForEvent(entrustEventId),
-      ])
-      dispatch.events.selectEntrustEvent({ entrustEvent, entrustEventPeople })
-
-      entrustAttendanceInt = setInterval(
-        () => pollEntrustAttendance(dispatch, entrustEventId),
-        INTERVAL,
+      await setEvent(
+        dispatch,
+        settings,
+        'entrustEventId',
+        Clear.EntrustEvent,
+        'selectEntrustEvent',
+        entrustAttendanceInt,
+        'setEntrust',
       )
-      pollEntrustAttendance(dispatch, entrustEventId)
     },
     selectTeacherEventAsync: async (_, { settings }) => {
-      clearInterval(teacherAttendanceInt)
-
-      const events = await getEventsForDate(settings.date)
-      const teacherEventId = events.find((e) => e.event_id === settings.teacherEventId)
-        ?.id
-
-      if (!teacherEventId) {
-        dispatch.events.clear(Clear.TeacherEvent)
-        return
-      }
-
-      const [teacherEvent, teacherEventPeople] = await Promise.all([
-        getEvent(teacherEventId),
-        getEligibleForEvent(teacherEventId),
-      ])
-      dispatch.events.selectTeacherEvent({ teacherEvent, teacherEventPeople })
-
-      teacherAttendanceInt = setInterval(
-        () => pollTeacherAttendance(dispatch, teacherEventId),
-        INTERVAL,
+      await setEvent(
+        dispatch,
+        settings,
+        'teacherEventId',
+        Clear.TeacherEvent,
+        'selectTeacherEvent',
+        teacherAttendanceInt,
+        'setTeacher',
       )
-      pollTeacherAttendance(dispatch, teacherEventId)
+    },
+    selectDoctrine101EventAsync: async (_, { settings }) => {
+      await setEvent(
+        dispatch,
+        settings,
+        'doctrine101EventId',
+        Clear.Doctrine101Event,
+        'selectDoctrine101Event',
+        doctrine101AttendanceInt,
+        'setDoctrine101',
+      )
     },
   }),
 })
 
-let entrustAttendanceInt: NodeJS.Timeout
-let teacherAttendanceInt: NodeJS.Timeout
+async function setEvent(
+  dispatch: Dispatch,
+  settings: Settings,
+  eventIdKey: keyof Settings,
+  clear: Clear,
+  reducerName: keyof Dispatch['events'],
+  interval: Timeout,
+  pollingReducer: keyof Dispatch['attendance'],
+) {
+  const events = await getEventsForDate(settings.date)
+  const eventId = events.find((e) => e.event_id === settings[eventIdKey])?.id
 
-const pollEntrustAttendance = async (
-  dispatch: RematchDispatch<RootModel>,
-  eventId: string,
-) => {
-  const attendance = await getAttendance(eventId)
-  dispatch.attendance.setEntrust(attendance)
-}
+  if (!eventId) {
+    dispatch.events.clear(clear)
+    return
+  }
 
-const pollTeacherAttendance = async (
-  dispatch: RematchDispatch<RootModel>,
-  eventId: string,
-) => {
-  const attendance = await getAttendance(eventId)
-  dispatch.attendance.setTeacher(attendance)
+  const [event, eventPeople] = await Promise.all([
+    getEvent(eventId),
+    getEligibleForEvent(eventId),
+  ])
+
+  // @ts-ignore
+  dispatch.events[reducerName]({ event, eventPeople })
+
+  const pollAttendance = async () => {
+    const attendance = await getAttendance(eventId)
+
+    // @ts-ignore
+    dispatch.attendance[pollingReducer](attendance)
+  }
+
+  interval.id && clearInterval(interval.id)
+  interval.id = setInterval(() => pollAttendance(), 1000 * 60 * 1)
+  pollAttendance()
 }

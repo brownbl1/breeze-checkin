@@ -6,12 +6,14 @@ import { Attendance } from './dataModel'
 export type AttendanceState = {
   entrustAttendance: Attendance[]
   teacherAttendance: Attendance[]
+  doctrine101Attendance: Attendance[]
 }
 
 export const attendance = createModel<RootModel>()({
   state: {
     entrustAttendance: [],
     teacherAttendance: [],
+    doctrine101Attendance: [],
   } as AttendanceState,
   reducers: {
     setEntrust: (state, entrustAttendance: Attendance[]) => ({
@@ -21,6 +23,10 @@ export const attendance = createModel<RootModel>()({
     setTeacher: (state, teacherAttendance: Attendance[]) => ({
       ...state,
       teacherAttendance,
+    }),
+    setDoctrine101: (state, doctrine101Attendance: Attendance[]) => ({
+      ...state,
+      doctrine101Attendance,
     }),
   },
   effects: () => ({
@@ -32,6 +38,14 @@ export const attendance = createModel<RootModel>()({
     checkInTeacherAsync: async (personId: string, { events: { teacherEvent } }) => {
       if (teacherEvent?.id) {
         await checkInPerson(teacherEvent.id, personId)
+      }
+    },
+    checkInDoctrine101Async: async (
+      personId: string,
+      { events: { doctrine101Event } },
+    ) => {
+      if (doctrine101Event?.id) {
+        await checkInPerson(doctrine101Event.id, personId)
       }
     },
   }),

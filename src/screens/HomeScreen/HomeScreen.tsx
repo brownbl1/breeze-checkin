@@ -40,8 +40,8 @@ const ScreenContents: React.FC<Props> = ({
 }) => {
   useEffect(() => {
     if (events.entrustEvent) {
-      const { entrustAttendance, teacherAttendance } = attendance
-      const title = `${events.entrustEvent?.name} - ${date} (${entrustAttendance.length}, ${teacherAttendance.length})`
+      const { entrustAttendance, teacherAttendance, doctrine101Attendance } = attendance
+      const title = `${events.entrustEvent.name} - ${date} (${entrustAttendance.length}, ${teacherAttendance.length}, ${doctrine101Attendance.length})`
       navigation.setOptions({ title })
     }
   }, [
@@ -49,6 +49,7 @@ const ScreenContents: React.FC<Props> = ({
     date,
     attendance.entrustAttendance,
     attendance.teacherAttendance,
+    attendance.doctrine101Attendance,
   ])
 
   const onPress = (person: EventPerson) => {

@@ -22,6 +22,7 @@ store.subscribe(
   )(() => {
     store.dispatch.events.selectEntrustEventAsync()
     store.dispatch.events.selectTeacherEventAsync()
+    store.dispatch.events.selectDoctrine101EventAsync()
   }),
 )
 
@@ -40,6 +41,15 @@ store.subscribe(
     'settings.teacherEventId',
   )(() => {
     store.dispatch.events.selectTeacherEventAsync()
+  }),
+)
+
+store.subscribe(
+  watch(
+    store.getState,
+    'settings.doctrine101EventId',
+  )(() => {
+    store.dispatch.events.selectDoctrine101EventAsync()
   }),
 )
 

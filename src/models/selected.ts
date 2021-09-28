@@ -87,6 +87,7 @@ export const selected = createModel<RootModel>()({
     }),
     'attendance/setEntrust': attendance,
     'attendance/setTeacher': attendance,
+    'attendance/setDoctrine101': attendance,
     toggleChecked: (state, personId: string) => {
       return {
         ...state,
@@ -107,6 +108,7 @@ export const selected = createModel<RootModel>()({
       const attendance = [
         ...rootState.attendance.entrustAttendance,
         ...rootState.attendance.teacherAttendance,
+        ...rootState.attendance.doctrine101Attendance,
       ]
 
       const person = await getPerson(rootState.selected.person.id)

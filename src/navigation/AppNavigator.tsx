@@ -58,7 +58,7 @@ export type SettingsStackParamList = {
   'Select Date': undefined
   'Select Day of Week': { initialDow: number } | undefined
   'Select Number of Parent Tags': { initialNumber: number } | undefined
-  'Select Event': { eventType: 'Entrust' | 'Entrust Teacher' }
+  'Select Event': { eventType: 'Entrust' | 'Entrust Teacher' | 'Doctrine 101' }
 }
 
 const SettingsStack = createStackNavigator<SettingsStackParamList>()

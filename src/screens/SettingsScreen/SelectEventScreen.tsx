@@ -19,6 +19,7 @@ const mapState = (state: RootState) => ({ date: state.settings.date })
 const mapDispatch = (dispatch: Dispatch) => ({
   setEntrustEventId: dispatch.settings.setEntrustEventId,
   setTeacherEventId: dispatch.settings.setTeacherEventId,
+  setDoctrine101EventId: dispatch.settings.setDoctrine101EventId,
 })
 
 type SelectEventNavigationProp = {
@@ -35,6 +36,7 @@ const ScreenContents: React.FC<Props> = ({
   date,
   setEntrustEventId,
   setTeacherEventId,
+  setDoctrine101EventId,
 }) => {
   const [events, setEvents] = useState<Event[]>([])
 
@@ -52,9 +54,20 @@ const ScreenContents: React.FC<Props> = ({
 
     setEvents(ev)
 
-    const fn =
-      route.params.eventType === 'Entrust' ? setEntrustEventId : setTeacherEventId
-    fn(events[index].event_id)
+    const id = events[index].event_id
+    switch (route.params.eventType) {
+      case 'Doctrine 101':
+        setDoctrine101EventId(id)
+        break
+      case 'Entrust':
+        setEntrustEventId(id)
+        break
+      case 'Entrust Teacher':
+        setTeacherEventId(id)
+        break
+      default:
+        break
+    }
   }
 
   return (

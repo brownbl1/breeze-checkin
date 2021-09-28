@@ -10,12 +10,14 @@ export type Settings = {
   date: string
   entrustEventId: string | null
   teacherEventId: string | null
+  doctrine101EventId: string | null
   printer: Printer | null
 }
 
 export const missingSettings = (settings: Settings): boolean =>
   !settings.entrustEventId ||
   !settings.teacherEventId ||
+  !settings.doctrine101EventId ||
   !settings.date ||
   !settings.printer ||
   typeof settings.numParentTags !== 'number' ||
@@ -50,6 +52,7 @@ export const settings = createModel<RootModel>()({
     numParentTags: 2,
     entrustEventId: null,
     teacherEventId: null,
+    doctrine101EventId: null,
     printer: null,
   } as Settings,
   reducers: {
@@ -64,6 +67,7 @@ export const settings = createModel<RootModel>()({
       date: getNextDate(dayOfWeek, state.date),
       entrustEventId: null,
       teacherEventId: null,
+      doctrine101EventId: null,
     }),
     setNumParentTags: (state, numParentTags: number) => ({
       ...state,
@@ -80,6 +84,10 @@ export const settings = createModel<RootModel>()({
     setTeacherEventId: (state, teacherEventId: string) => ({
       ...state,
       teacherEventId,
+    }),
+    setDoctrine101EventId: (state, doctrine101EventId: string) => ({
+      ...state,
+      doctrine101EventId,
     }),
   },
 })
