@@ -24,7 +24,7 @@
     "expo-app-loading": "^1.0.1",
     "expo-constants": "~9.3.3",
     "expo-print": "~9.2.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "react": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.0.tar.gz",
     "react-native-elements": "^3.0.0-alpha.1",
